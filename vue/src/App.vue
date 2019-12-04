@@ -13,10 +13,20 @@
         <router-view />
       </v-container>
     </v-content>
+
+    <confirm-dialog ref="confirm"></confirm-dialog>
   </v-app>
 </template>
 <script>
+import ConfirmDialog from "./components/ConfirmDialog";
 export default {
-  name: "App"
+  name: "App",
+  components: {
+    ConfirmDialog
+  },
+  
+  mounted() {
+    this.$root.$confirm = this.$refs.confirm;
+  }
 };
 </script>

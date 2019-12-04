@@ -48,6 +48,7 @@ export default {
   data: () => ({
     email: "",
     password: "",
+    logging_in: false,
     rules: {
       required: value => !!value || "Required.",
       email: [
@@ -62,6 +63,36 @@ export default {
         );
       }
     }
-  })
+  }),
+
+  methods: {
+    login() {
+  if (this.$refs.form.validate()) {
+        this.logging_in = true;
+
+        this.$store
+          .dispatch("login", {
+            email: this.email,
+            password: this.password
+          })
+          .then(response => {
+            this.show = false;
+          })
+          .catch(err => {
+            var msg;
+            if (err.response.status == 401)
+              msg = "Invalid e-mail and/or password";
+            else
+              msg = "An error occurred. Check your Internet connection.";
+
+            this.$root.$confirm.open("Error", msg, {
+              color: "red",
+              show_cancel: false,
+              icon: "mdi-alert-circle"
+            });
+          });
+      }
+    },
+  },
 };
 </script>

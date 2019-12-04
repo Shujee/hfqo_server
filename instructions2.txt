@@ -23,3 +23,5 @@
     : 'index.html'
     }
 8.  Install Vue Router
+9.  Install Vuex
+10. 
