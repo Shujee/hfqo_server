@@ -1,0 +1,22 @@
+{
+    "sqltools.connections": [
+        {
+            "askForPassword": false,
+            "database": "lado",
+            "dialect": "MySQL",
+            "name": "LADO",
+            "port": 3306,
+            "server": "localhost",
+            "username": "root"
+        },
+        {
+            "askForPassword": false,
+            "database": "hfq",
+            "dialect": "MariaDB",
+            "name": "HFQ",
+            "port": 3306,
+            "server": "localhost",
+            "username": "root"
+        }
+    ]
+}
