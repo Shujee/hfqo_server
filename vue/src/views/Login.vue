@@ -75,7 +75,7 @@ export default {
             email: this.email,
             password: this.password
           })
-          .then(response => {
+          .then(() => {
             this.show = false;
           })
           .catch(err => {
