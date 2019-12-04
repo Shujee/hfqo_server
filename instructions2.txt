@@ -1,3 +1,25 @@
 1.  In Laravel folder, run command: vue ui
 2.  In Vue UI tool, create a new project and name it "vue"
 3.  In Plugins, install Vuetify Plugin
+4.  Run command: php artisan preset none (removes laravel front-end scaffold)
+5.  In Vue CLI Configuration, set Output Directory to ../public
+6.  Remove home route from web.config
+7.  Remove auth routes call from web.config.
+8.  
+8.  Make vue.config.js in Vue root folder and add this:
+    module.exports = {
+    configureWebpack: {
+        devtool: 'source-map'
+    },
+    devServer: {
+        proxy: 'http://hfq:8080/api/v1',
+    },
+    outputDir: '../public',
+
+    // modify the location of the generated HTML file.
+    // make sure to do this only in production.
+    indexPath: process.env.NODE_ENV === 'production'
+    ? '../resources/views/welcome.blade.php'
+    : 'index.html'
+    }
+8.  Install Vue Router
