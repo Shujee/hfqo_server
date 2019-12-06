@@ -1,38 +1,55 @@
 <template>
-  <v-layout wrap align-center justify-center>
+  <v-layout wrap justify-center>
     <v-flex lg3 md6 sm8 xs12>
       <v-form action="#" ref="form" @submit.prevent="login">
-        <v-row class="justify-center mb-5">
-        <h1 class="text-center">HFQ Admin Login</h1>
+        <v-row class="justify-center my-lg-12 my-xs-6">
+          <h1 class="text-center">HFQ Admin Login</h1>
         </v-row>
 
-        <v-text-field
-          ref="txtEmail"
-          label="Email"
-          name="email"
-          prepend-icon="mdi-at"
-          type="text"
-          autofocus
-          v-model="email"
-          :rules="[rules.required, rules.email]"
-          validate-on-blur
-        ></v-text-field>
+        <v-row class="justify-center my-lg-12 my-xs-6">
+          <v-avatar size="128" class="elevation-10">
+            <img src="../assets/AdminPhoto.png" alt="alt" />
+          </v-avatar>
+        </v-row>
 
-        <v-text-field
-          id="password"
-          label="Password"
-          name="password"
-          prepend-icon="mdi-lock"
-          type="password"
-          v-model="password"
-          :rules="[rules.required, rules.password]"
-          validate-on-blur
-          v-on:keyup.enter="login"
-        ></v-text-field>
+        <v-row class="mt-lg-12 mt-xs-6">
+          <v-text-field
+            ref="txtEmail"
+            label="Email"
+            name="email"
+            type="text"
+            color="primary"
+            class="text-bold"
+            autofocus
+            v-model="email"
+            :rules="[rules.required, rules.email]"
+            validate-on-blur
+          ></v-text-field>
+        </v-row>
 
-        <v-row class="mt-5">
-          <div class="flex-grow-1"></div>
-          <v-btn color="primary" @click.stop="login">Login</v-btn>
+        <v-row>
+          <v-text-field
+            id="password"
+            label="Password"
+            name="password"
+            color="primary"
+            type="password"
+            v-model="password"
+            :rules="[rules.required, rules.password]"
+            validate-on-blur
+            v-on:keyup.enter="login"
+          ></v-text-field>
+        </v-row>
+
+        <v-row class="my-lg-12 my-xs-6">
+          <v-btn
+            color="primary"
+            class="green-btn"
+            height="60"
+            dark
+            block
+            @click.stop="login"
+          >Login</v-btn>
         </v-row>
       </v-form>
 
@@ -52,8 +69,8 @@ export default {
     rules: {
       required: value => !!value || "Required.",
       email: [
-        v => !!v || 'E-mail is required',
-        v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
+        v => !!v || "E-mail is required",
+        v => /.+@.+\..+/.test(v) || "E-mail must be valid"
       ],
       password: value => {
         const pattern = /^[\w\d]{6,15}$/;
@@ -67,7 +84,7 @@ export default {
 
   methods: {
     login() {
-  if (this.$refs.form.validate()) {
+      if (this.$refs.form.validate()) {
         this.logging_in = true;
 
         this.$store
@@ -76,15 +93,17 @@ export default {
             password: this.password
           })
           .then(() => {
-            this.show = false;
+            this.logging_in = false;
+            this.$router.push('home');
           })
           .catch(err => {
             var msg;
             if (err.response.status == 401)
               msg = "Invalid e-mail and/or password";
-            else
+            else 
               msg = "An error occurred. Check your Internet connection.";
 
+            this.logging_in = false;
             this.$root.$confirm.open("Error", msg, {
               color: "red",
               show_cancel: false,
@@ -92,7 +111,26 @@ export default {
             });
           });
       }
-    },
-  },
+    }
+  }
 };
 </script>
+<style scoped>
+.green-btn {
+  background-color: #9db3e7;
+  border-radius: 25px;
+  box-shadow: 0 10px 30px 0 #9db3e7;
+  -moz-box-shadow: 0 10px 30px 0 #9db3e7;
+  -webkit-box-shadow: 0 10px 30px 0 #9db3e7;
+  -o-box-shadow: 0 10px 30px 0 #9db3e7;
+  -ms-box-shadow: 0 10px 30px 0 #9db3e7;
+  -webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+  transition: all 0.4s;
+}
+
+.v-input {
+  font-weight: bold;
+}
+</style>

@@ -14,11 +14,11 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|regex:'. \Globals::REGEX_MOBILE_NUMBER,
+            'email' => 'required|regex:/.+@.+\..+/',
         ],
         [
             'email.required' => 'E-mail address is required.',
-            'email.regex' => \Globals::REGEX_MOBILE_NUMBER_MSG
+            'email.regex' => 'E-mail address is not in correct format.'
         ]);
 
         $http = new \GuzzleHttp\Client; 
