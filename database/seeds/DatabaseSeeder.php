@@ -11,6 +11,18 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // $this->call(UsersTableSeeder::class);
+        //CREATE ADMIN USER
+        $u1 = new App\User;
+        $u1->name = 'HFQ Admin';
+        $u1->email = 'shujaat@hotmail.com';
+        $u1->password = \Illuminate\Support\Facades\Hash::make('123');
+        $u1->save();
+        
+        $this->command->getOutput()->writeln("<info>Created admin user</info>");
+        
+        $this->call(App\UsersTableSeeder::class);
+        $this->call(App\ExamsTableSeeder::class);
+        $this->call(App\AccessesTableSeeder::class);
+        $this->call(App\DownloadsTableSeeder::class);
     }
 }
