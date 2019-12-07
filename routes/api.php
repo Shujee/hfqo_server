@@ -22,6 +22,7 @@ Route::prefix('v1')->middleware('cors')->group(function()
         Route::post('/logout', 'AuthController@logout');
 
         Route::get('/exams', 'ExamController@index');
+        Route::delete('/exam/{exam}', 'ExamController@destroy');
     });
 });
 

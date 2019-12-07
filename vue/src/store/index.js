@@ -28,15 +28,10 @@ export default new Vuex.Store({
             state.exams = payload;
         },
 
-        setReqDeleted(state, id) {
-            var MyReq = state.exams.findIndex(r => r.id == id);
-            if(MyReq >= 0)
-                state.exams.splice(MyReq , 1 );
-        },
-
-        setReqPosted(state, newreq) {
-            state.exams.push(newreq);
-            state.user.req_balance--;
+        setExamDeleted(state, id) {
+            var MyExam = state.exams.findIndex(r => r.id == id);
+            if(MyExam >= 0)
+                state.exams.splice(MyExam , 1);
         },
     },
     actions: {
@@ -84,6 +79,26 @@ export default new Vuex.Store({
                     context.commit("setExams", null);
                     throw err;
                 });
+        },
+
+        deleteExam(context, id) {
+            if (context.getters.loggedIn) {
+                axios.defaults.headers.common["Authorization"] = "Bearer " + context.state.token;
+                
+                return axios
+                    .delete('exam/' + id)
+                    .then(response => {
+                        context.commit("setExamDeleted", id);
+                        return response;
+                    })
+                    .catch(err => {
+                        if(err.response.status === 403) {
+                            alert('This master file could not be deleted.');
+                        }
+
+                        throw err;
+                    });
+            }
         },
     },
     modules: {}
