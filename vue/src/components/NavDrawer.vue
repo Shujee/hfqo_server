@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer permanent>
+  <v-navigation-drawer permanent :width="width">
     <v-list-item>
       <v-list-item-content>
         <v-list-item-title class="title">HFQ Admin</v-list-item-title>
@@ -17,6 +17,7 @@
 
         <v-list-item-content>
           <v-list-item-title>{{ item.title }}</v-list-item-title>
+          <v-list-item-subtitle>{{ item.subtitle }}</v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
     </v-list>
@@ -26,12 +27,15 @@
 <script>
   export default {
     name: "NavDrawer",
+    props: {
+      width: Number,
+    },
     data () {
       return {
         items: [
-          { title: 'Dashboard', icon: 'mdi-view-dashboard' },
-          { title: 'Photos', icon: 'mdi-image' },
-          { title: 'About', icon: 'mdi-help-box' },
+          { title: 'Master Files', subtitle: 'Add or manage master documents', icon: 'mdi-file-document' },
+          { title: 'Users', subtitle: 'Create users, assign permissions', icon: 'mdi-account' },
+          { title: 'HFQ Report',subtitle: 'Generate high-frequency questions report', icon: 'mdi-file-chart' },
         ],
         right: null,
       }

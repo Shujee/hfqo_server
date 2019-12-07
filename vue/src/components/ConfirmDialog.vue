@@ -9,24 +9,24 @@
       <v-toolbar dark :color="options.color" dense flat>
         <v-toolbar-title class="white--text">{{ title }}</v-toolbar-title>
       </v-toolbar>
-      <v-row wrap>
-        <v-flex xs2 right>
-          <v-icon large class="pa-4" :color="options.color">{{ options.icon }}</v-icon>
-        </v-flex>
-        <v-flex xs10>
-          <v-card-text v-show="!!message" class="pa-4">
+      <v-card-text v-show="!!message" class="pa-4">
+        <v-row wrap no-gutters>
+          <v-col cols="2" class="align-start">
+            <v-icon large class="ma-4" :color="options.color">{{ options.icon }}</v-icon>
+          </v-col>
+          <v-col class="align-start ma-4">
             <span v-if="message !== Object(message)">{{ message }}</span>
             <template v-else>
               <span v-if="Object.keys(message).length == 1">{{ Object.values(message)[0][0] }}</span>
               <ul v-else>
                 <template v-for="k in message">
-                    <li v-for="s in k" :key="s">{{ s }}</li>
+                  <li v-for="s in k" :key="s">{{ s }}</li>
                 </template>
               </ul>
             </template>
-          </v-card-text>
-        </v-flex>
-      </v-row>
+          </v-col>
+        </v-row>
+      </v-card-text>
 
       <v-card-actions class="pt-0">
         <v-spacer></v-spacer>

@@ -6,10 +6,12 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
     state: {
-        token: localStorage.getItem("token") || null
+        token: localStorage.getItem("token") || null,
+        exams: [],
     },
     getters: {
-        loggedIn: state => state.token !== null
+        loggedIn: state => state.token !== null,
+        exams: state => state.exams,
     },
     mutations: {
         setLoginData(state, login_data) {
@@ -20,13 +22,25 @@ export default new Vuex.Store({
                 state.token = login_data.token.access_token;
                 localStorage.setItem("token", login_data.token.access_token);
             }
-        }
+        },
+
+        setExams(state, payload) {
+            state.exams = payload;
+        },
+
+        setReqDeleted(state, id) {
+            var MyReq = state.exams.findIndex(r => r.id == id);
+            if(MyReq >= 0)
+                state.exams.splice(MyReq , 1 );
+        },
+
+        setReqPosted(state, newreq) {
+            state.exams.push(newreq);
+            state.user.req_balance--;
+        },
     },
     actions: {
         logout(context) {
-            axios.defaults.headers.common["Authorization"] =
-                "Bearer " + context.state.token;
-
             if (context.getters.loggedIn) {
                 return axios
                     .post("logout")
@@ -55,7 +69,22 @@ export default new Vuex.Store({
                     context.commit("setLoginData", null);
                     throw err;
                 });
-        }
+        },
+
+        fetchExams(context) {
+            axios.defaults.headers.common["Authorization"] = "Bearer " + this.state.token;
+
+            return axios
+                .get("exams")
+                .then(response => {
+                    context.commit("setExams", response.data.data);
+                    return response;
+                })
+                .catch((err) => {
+                    context.commit("setExams", null);
+                    throw err;
+                });
+        },
     },
     modules: {}
 });

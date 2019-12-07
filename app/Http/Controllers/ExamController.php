@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exam;
 use Illuminate\Http\Request;
+use App\Http\Resources\Exam as ExamResource;
 
 class ExamController extends Controller
 {
@@ -14,7 +15,8 @@ class ExamController extends Controller
      */
     public function index()
     {
-        //
+        $Exams = Exam::all();
+        return ExamResource::collection($Exams);
     }
 
     /**
