@@ -1,0 +1,29 @@
+{
+    "version": "0.2.0",
+    "compounds": [
+        {
+            "name": "Launch & Debug",
+            "configurations": [ "Launch Program", "Launch Chrome" ]
+        }
+    ],
+    "configurations": [
+        {
+            "type": "php",
+            "request": "launch",
+            "name": "Launch Program",
+            "cwd": "c:\\xampp\\htdocs\\hfq",
+            "port": 9000,
+            "xdebugSettings": {
+                "max_children": 999,
+                "show_hidden": 1
+            }
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome",
+            "url": "http://hfq:8080/",
+            "sourceMaps": true
+        }
+    ]
+}

@@ -1,5 +1,5 @@
 <template>
-  <v-layout wrap justify-center>
+  <v-row wrap justify-center>
     <v-flex lg3 md6 sm8 xs12>
       <v-form action="#" ref="form" @submit.prevent="login">
         <v-row class="justify-center my-lg-12 my-xs-6">
@@ -55,7 +55,7 @@
 
       <v-progress-circular v-if="logging_in" indeterminate dark />
     </v-flex>
-  </v-layout>
+  </v-row>
 </template>
 
 <script>
@@ -67,15 +67,12 @@ export default {
     password: "",
     logging_in: false,
     rules: {
-      required: value => !!value || "Required.",
-      email: [
-        v => !!v || "E-mail is required",
-        v => /.+@.+\..+/.test(v) || "E-mail must be valid"
-      ],
-      password: value => {
+      required:   v => !!v || "Required.",
+      email:      v => /.+@.+\..+/.test(v) || "E-mail must be valid",
+      password:   v => {
         const pattern = /^[\w\d]{6,15}$/;
         return (
-          pattern.test(value) ||
+          pattern.test(v) ||
           "Password must be 8 to 15 characters long. Alphabet and digits only."
         );
       }
@@ -94,7 +91,7 @@ export default {
           })
           .then(() => {
             this.logging_in = false;
-            this.$router.push('home');
+            this.$router.push('/');
           })
           .catch(err => {
             var msg;

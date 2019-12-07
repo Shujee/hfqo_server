@@ -16,6 +16,11 @@ Route::prefix('v1')->middleware('cors')->group(function()
 {
     Route::post('/login', 'AuthController@login')->middleware('throttle:15,5');
     Route::post('/register', 'AuthController@register')->middleware('throttle:112,10');    
+
+    Route::group(['middleware' => 'auth:api'], function()
+    {
+        Route::post('/logout', 'AuthController@logout');
+    });
 });
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {

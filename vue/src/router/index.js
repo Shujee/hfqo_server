@@ -18,7 +18,10 @@ const routes = [
     path: '/login',
     name: 'login',
     component: Login,
-    meta: { requiresLogin: false }
+    meta: { 
+      requiresLogin: false, 
+      redirect: 'home' 
+    }
   },
   {
     path: '/about',
@@ -36,9 +39,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach( (to, from, next) => {
-  console.log('HERE1');
   if (to.matched.some(record => record.meta.requiresLogin) && !store.getters.loggedIn) {
-    console.log('HERE');
       next("/login");
   } else {
       next()

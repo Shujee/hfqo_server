@@ -1,9 +1,15 @@
 <template>
-  <div class="home">
-    <h1>HFQ Home Page</h1>
-  </div>
+<v-container fluid fill-height class="ma-0 pa-0">
+    <nav-drawer />
+</v-container>
 </template>
 
 <script>
+import NavDrawer from "../components/NavDrawer.vue";
 
-</script>
+export default {
+  components: {
+    NavDrawer
+  }
+};
+</script>>

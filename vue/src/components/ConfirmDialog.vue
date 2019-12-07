@@ -9,7 +9,7 @@
       <v-toolbar dark :color="options.color" dense flat>
         <v-toolbar-title class="white--text">{{ title }}</v-toolbar-title>
       </v-toolbar>
-      <v-layout wrap>
+      <v-row wrap>
         <v-flex xs2 right>
           <v-icon large class="pa-4" :color="options.color">{{ options.icon }}</v-icon>
         </v-flex>
@@ -26,7 +26,7 @@
             </template>
           </v-card-text>
         </v-flex>
-      </v-layout>
+      </v-row>
 
       <v-card-actions class="pt-0">
         <v-spacer></v-spacer>
