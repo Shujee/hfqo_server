@@ -71,7 +71,8 @@ class ExamController extends Controller
      */
     public function update(Request $request, Exam $exam)
     {
-        //
+        $exam->fill($request->all());
+        $exam->save();
     }
 
     /**

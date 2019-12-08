@@ -21,7 +21,8 @@ class Exam extends JsonResource
             'xml_file_name' => $this->xml_file_name,
             'qa_count' => $this->qa_count,
             'is_expired' => $this->is_expired,
-            'age' => $this->created_at->diffForHumans(),
+            'updated_at' => $this->updated_at,
+            'age' => $this->updated_at->diffForHumans(),
         ];
     }
 }

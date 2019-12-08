@@ -23,6 +23,7 @@ Route::prefix('v1')->middleware('cors')->group(function()
 
         Route::get('/exams', 'ExamController@index');
         Route::delete('/exam/{exam}', 'ExamController@destroy');
+        Route::put('/exam/{exam}', 'ExamController@update');
     });
 });
 

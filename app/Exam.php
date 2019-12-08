@@ -9,6 +9,15 @@ class Exam extends Model
 {
     use SoftDeletes;
 
+        /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'name', 'is_expired',
+    ];
+
     public function scopeNotExpired($query)
     {
         return $query->where('is_expired', false);

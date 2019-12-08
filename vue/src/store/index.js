@@ -33,6 +33,20 @@ export default new Vuex.Store({
             if(MyExam >= 0)
                 state.exams.splice(MyExam , 1);
         },
+        
+        setExamUpdated(state, exam) {
+            var MyExam = state.exams.find(r => r.id == exam.id);
+            if(MyExam !== null)
+            {
+                MyExam.name = exam.name;
+                MyExam.qa_count = exam.qa_count;
+                MyExam.is_expired = exam.is_expired;
+                MyExam.created_at = exam.created_at;
+                MyExam.updated_at = exam.updated_at;
+                MyExam.xml_file_name = exam.xml_file_name;
+                MyExam.xps_file_name = exam.xps_file_name;
+            }
+        },
     },
     actions: {
         logout(context) {
@@ -94,6 +108,26 @@ export default new Vuex.Store({
                     .catch(err => {
                         if(err.response.status === 403) {
                             alert('This master file could not be deleted.');
+                        }
+
+                        throw err;
+                    });
+            }
+        },
+
+        updateExam(context, exam) {
+            if (context.getters.loggedIn) {
+                axios.defaults.headers.common["Authorization"] = "Bearer " + context.state.token;
+              
+                return axios
+                    .put('exam/' + exam.id, exam)
+                    .then(response => {
+                        context.commit("setExamUpdated", exam);
+                        return response;
+                    })
+                    .catch(err => {
+                        if(err.response.status === 403) {
+                            alert('Could not update master file on the server.');
                         }
 
                         throw err;
