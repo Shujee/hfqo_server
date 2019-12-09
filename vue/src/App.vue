@@ -1,7 +1,7 @@
 <template>
   <v-app>
-    <v-app-bar app color="primary" dark clipped>
-      <span class="mr-5">HFQ SERVER</span>
+    <v-app-bar app color="primary" dark clipped-left>
+      <span class="mr-5"><h1>HFQ</h1></span>
       <v-btn to="/" text class="ml-5">Home</v-btn>
       <v-btn to="/about" text>About</v-btn>
       <v-spacer></v-spacer>

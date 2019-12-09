@@ -1,18 +1,33 @@
 <template>
-  <v-container fluid fill-height class="ma-0 pa-0 align-start child-flex">
-    <nav-drawer :width="250" />
-    <ExamsDataTable />
+  <v-container fluid class="ma-0 pa-0 align-start child-flex">
+    <nav-drawer @click="changeView" />
+    <ExamsDataTable v-if="this.view == 'exams'" />
+    <UsersDataTable v-if="this.view == 'users'" />
   </v-container>
 </template>
 
 <script>
 import NavDrawer from "../components/NavDrawer.vue";
 import ExamsDataTable from "../components/ExamsDataTable.vue";
+import UsersDataTable from "../components/UsersDataTable.vue";
 
 export default {
   components: {
     NavDrawer,
-    ExamsDataTable
+    ExamsDataTable,
+    UsersDataTable
+  },
+
+  data() {
+    return {
+      view: "exams"
+    };
+  },
+
+  methods: {
+    changeView(view) {
+      this.view = view;
+    }
   }
 };
 </script>>

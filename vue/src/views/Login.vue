@@ -9,8 +9,8 @@
             </v-row>
 
             <v-row class="justify-center my-3 my-lg-12">
-              <v-avatar size="128" class="elevation-10">
-                <img src="../assets/AdminPhoto.png" alt="alt" />
+              <v-avatar size="128" color="primary" class="elevation-10">
+                <v-icon size="100" dark>mdi-account-supervisor</v-icon>
               </v-avatar>
             </v-row>
 

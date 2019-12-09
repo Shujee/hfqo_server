@@ -8,10 +8,12 @@ export default new Vuex.Store({
     state: {
         token: localStorage.getItem("token") || null,
         exams: [],
+        users: [],
     },
     getters: {
         loggedIn: state => state.token !== null,
         exams: state => state.exams,
+        users: state => state.users,
     },
     mutations: {
         setLoginData(state, login_data) {
@@ -26,6 +28,10 @@ export default new Vuex.Store({
 
         setExams(state, payload) {
             state.exams = payload;
+        },
+
+        setUsers(state, payload) {
+            state.users = payload;
         },
 
         setExamDeleted(state, id) {
@@ -46,6 +52,26 @@ export default new Vuex.Store({
                 MyExam.xml_file_name = exam.xml_file_name;
                 MyExam.xps_file_name = exam.xps_file_name;
             }
+        },
+
+        setUserDeleted(state, id) {
+            var MyUser = state.users.findIndex(r => r.id == id);
+            if(MyUser >= 0)
+                state.users.splice(MyUser, 1);
+        },
+        
+        setUserUpdated(state, user) {
+            var MyUser = state.users.find(r => r.id == user.id);
+
+            if(MyUser !== null)
+            {
+                MyUser.name = user.name;
+                MyUser.password = user.password;
+            }
+        },
+        
+        setUserCreated(state, user) {
+            state.users.push(user);
         },
     },
     actions: {
@@ -134,6 +160,85 @@ export default new Vuex.Store({
                     });
             }
         },
+
+
+        
+        fetchUsers(context) {
+            axios.defaults.headers.common["Authorization"] = "Bearer " + this.state.token;
+
+            return axios
+                .get("users")
+                .then(response => {
+                    context.commit("setUsers", response.data.data);
+                    return response;
+                })
+                .catch((err) => {
+                    context.commit("setUsers", null);
+                    throw err;
+                });
+        },
+
+        deleteUser(context, id) {
+            if (context.getters.loggedIn) {
+                axios.defaults.headers.common["Authorization"] = "Bearer " + context.state.token;
+                
+                return axios
+                    .delete('user/' + id)
+                    .then(response => {
+                        context.commit("setUserDeleted", id);
+                        return response;
+                    })
+                    .catch(err => {
+                        if(err.response.status === 403) {
+                            alert('This user could not be deleted.');
+                        }
+
+                        throw err;
+                    });
+            }
+        },
+
+        updateUser(context, user) {
+            if (context.getters.loggedIn) {
+                axios.defaults.headers.common["Authorization"] = "Bearer " + context.state.token;
+             
+                return axios
+                    .put('user/' + user.id, user)
+                    .then(response => {
+                        context.commit("setUserUpdated", user);
+                        return response;
+                    })
+                    .catch(err => {
+                        if(err.response.status === 403) {
+                            alert('Could not update user on the server.');
+                        }
+
+                        throw err;
+                    });
+            }
+        },
+
+        createUser(context, user) {
+            if (context.getters.loggedIn) {
+                axios.defaults.headers.common["Authorization"] = "Bearer " + context.state.token;
+              
+                return axios
+                    .post('user', user)
+                    .then(response => {
+                        context.commit("setUserCreated", response.data.data);
+                        return response;
+                    })
+                    .catch(err => {                       
+                        if(err.response.status === 403) {
+                            alert('Could not create user on the server.');
+                        }
+
+                        throw err;
+                    });
+            }
+        },
+
+
     },
     modules: {}
 });
