@@ -9,11 +9,15 @@ export default new Vuex.Store({
         token: localStorage.getItem("token") || null,
         exams: [],
         users: [],
+        downloads: [],
+        uploads: [],
     },
     getters: {
         loggedIn: state => state.token !== null,
         exams: state => state.exams,
         users: state => state.users,
+        downloads: state => state.downloads,
+        uploads: state => state.uploads,
     },
     mutations: {
         setLoginData(state, login_data) {
@@ -32,6 +36,14 @@ export default new Vuex.Store({
 
         setUsers(state, payload) {
             state.users = payload;
+        },
+
+        setDownloads(state, payload) {
+            state.downloads = payload;
+        },
+
+        setUploads(state, payload) {
+            state.uploads = payload;
         },
 
         setExamDeleted(state, id) {
@@ -160,9 +172,7 @@ export default new Vuex.Store({
                     });
             }
         },
-
-
-        
+      
         fetchUsers(context) {
             axios.defaults.headers.common["Authorization"] = "Bearer " + this.state.token;
 
@@ -238,7 +248,35 @@ export default new Vuex.Store({
             }
         },
 
+        fetchDownloads(context) {
+            axios.defaults.headers.common["Authorization"] = "Bearer " + this.state.token;
 
+            return axios
+                .get("downloads")
+                .then(response => {
+                    context.commit("setDownloads", response.data.data);
+                    return response;
+                })
+                .catch((err) => {
+                    context.commit("setDownloads", null);
+                    throw err;
+                });
+        },
+        
+        fetchUploads(context) {
+            axios.defaults.headers.common["Authorization"] = "Bearer " + this.state.token;
+
+            return axios
+                .get("uploads")
+                .then(response => {
+                    context.commit("setUploads", response.data.data);
+                    return response;
+                })
+                .catch((err) => {
+                    context.commit("setUploads", null);
+                    throw err;
+                });
+        },
     },
     modules: {}
 });

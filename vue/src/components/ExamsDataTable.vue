@@ -48,7 +48,7 @@
       </template>
 
       <template v-slot:item.is_expired="{ item }">
-        <v-checkbox color="error" :readonly="true" v-model="item.is_expired"></v-checkbox>
+        <v-icon v-if="item.is_expired" color="red" class="justify-center align-center center centered ma-0 pa-0">mdi-checkbox-marked</v-icon>
       </template>
 
       <template v-slot:item.updated_at="{ item }">
@@ -105,7 +105,7 @@ export default {
         {
           text: "Expired",
           value: "is_expired",
-          align: "left",
+          align: "center",
           sortable: false
         },
         {

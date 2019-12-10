@@ -3,6 +3,8 @@
     <nav-drawer @click="changeView" />
     <ExamsDataTable v-if="this.view == 'exams'" />
     <UsersDataTable v-if="this.view == 'users'" />
+    <DownloadsDataTable v-if="this.view == 'downloads'" />
+    <UploadsDataTable v-if="this.view == 'uploads'" />
   </v-container>
 </template>
 
@@ -10,12 +12,16 @@
 import NavDrawer from "../components/NavDrawer.vue";
 import ExamsDataTable from "../components/ExamsDataTable.vue";
 import UsersDataTable from "../components/UsersDataTable.vue";
+import DownloadsDataTable from "../components/DownloadsDataTable.vue";
+import UploadsDataTable from "../components/UploadsDataTable.vue";
 
 export default {
   components: {
     NavDrawer,
     ExamsDataTable,
-    UsersDataTable
+    UsersDataTable,
+    DownloadsDataTable,
+    UploadsDataTable,
   },
 
   data() {

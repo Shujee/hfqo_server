@@ -29,6 +29,9 @@ Route::prefix('v1')->middleware('cors')->group(function()
         Route::delete('/user/{user}', 'UserController@destroy');
         Route::put('/user/{user}', 'UserController@update');
         Route::post('/user', 'UserController@store');
+
+        Route::get('/downloads', 'DownloadController@index');
+        Route::get('/uploads', 'UploadController@index');
     });
 });
 

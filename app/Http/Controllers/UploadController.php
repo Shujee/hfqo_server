@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Upload;
 use Illuminate\Http\Request;
+use App\Http\Resources\Upload as UploadResource;
 
 class UploadController extends Controller
 {
@@ -14,7 +15,8 @@ class UploadController extends Controller
      */
     public function index()
     {
-        //
+        $Uploads = Upload::all();
+        return UploadResource::collection($Uploads);
     }
 
     /**

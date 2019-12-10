@@ -10,4 +10,16 @@ class Upload extends Model
     {
         return $this->belongsTo('App\Access');
     }
+
+    public function Exam()
+    {
+        $Acc = Access::find($this->access_id);
+        return Exam::withTrashed()->find($Acc->exam_id);
+    }
+
+    public function User()
+    {
+        $Acc = Access::find($this->access_id);
+        return User::withTrashed()->find($Acc->user_id);
+    }
 }

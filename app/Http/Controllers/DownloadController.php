@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Download;
 use Illuminate\Http\Request;
+use App\Http\Resources\Download as DownloadResource;
 
 class DownloadController extends Controller
 {
@@ -14,7 +15,8 @@ class DownloadController extends Controller
      */
     public function index()
     {
-        //
+        $Downloads = Download::all();
+        return DownloadResource::collection($Downloads);
     }
 
     /**
