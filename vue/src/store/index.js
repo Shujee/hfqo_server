@@ -81,7 +81,7 @@ export default new Vuex.Store({
                 MyUser.password = user.password;
             }
         },
-        
+       
         setUserCreated(state, user) {
             state.users.push(user);
         },
@@ -276,6 +276,33 @@ export default new Vuex.Store({
                     context.commit("setUploads", null);
                     throw err;
                 });
+        },
+
+        fetchAccesses(context, examid) {
+            axios.defaults.headers.common["Authorization"] = "Bearer " + this.state.token;
+
+            return axios
+                .get("exam/" + examid + "/accesses")
+                .then(response => {
+                    return response;
+                })
+                .catch((err) => {
+                    throw err;
+                });
+        },
+
+        updateAccesses(context, accesses) {
+            if (context.getters.loggedIn) {
+                axios.defaults.headers.common["Authorization"] = "Bearer " + context.state.token;
+
+                axios.post('access/update_bulk', accesses)
+                    .then(response => {
+                        return response;
+                    })
+                    .catch((err) => {
+                        throw err;
+                    });                     
+            }
         },
     },
     modules: {}

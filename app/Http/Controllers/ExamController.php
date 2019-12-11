@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exam;
 use Illuminate\Http\Request;
 use App\Http\Resources\Exam as ExamResource;
+use App\Http\Resources\Access as AccessResource;
 
 class ExamController extends Controller
 {
@@ -84,5 +85,19 @@ class ExamController extends Controller
     public function destroy(Exam $exam)
     {
         $exam->delete();
+    }
+
+    /**
+     * Returns all access rows of this Exam object
+     *
+     * @param  \App\Exam  $exam
+     * @return \Illuminate\Http\Response
+     */
+    public function accesses(Exam $exam)
+    {
+        $Accesses = $exam->Accesses;
+        $res = AccessResource::collection($Accesses);
+
+        return $res;
     }
 }

@@ -1,6 +1,7 @@
 <template>
   <v-card class="ma-0 pa-0">
     <v-card-title class="ma-0 py-1">
+      <v-icon class="mr-2">mdi-file-document</v-icon>
       Master Files
       <v-spacer></v-spacer>
       <v-text-field
@@ -14,7 +15,6 @@
 
     <v-data-table
       style="height: calc(100vh - 120px); overflow: auto;"
-      full-width
       :headers="headers"
       :items="exams"
       :loading="loading"
@@ -34,21 +34,10 @@
         </v-avatar>
         <span class="pl-4">{{ item.name }}</span>
       </template>
-
-      <template v-slot:item.xps_file_name="{ item }">
-        <span>{{ item.xps_file_name }}</span>
-      </template>
-
-      <template v-slot:item.xml_file_name="{ item }">
-        <span>{{ item.xml_file_name }}</span>
-      </template>
-
-      <template v-slot:item.qa_count="{ item }">
-        <span>{{ item.qa_count }}</span>
-      </template>
-
+   
       <template v-slot:item.is_expired="{ item }">
-        <v-icon v-if="item.is_expired" color="red" class="justify-center align-center center centered ma-0 pa-0">mdi-checkbox-marked</v-icon>
+        <v-icon v-if="item.is_expired" color="red">mdi-checkbox-marked</v-icon>
+        <v-icon v-else>mdi-checkbox-blank-outline</v-icon>
       </template>
 
       <template v-slot:item.updated_at="{ item }">
@@ -61,6 +50,13 @@
       </template>
 
       <template v-slot:item.actions="{ item }">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon @click="showPermissionsModal(item)" class="mr-2" v-on="on">mdi-timetable</v-icon>
+          </template>
+          <span>Assign access permissions</span>
+        </v-tooltip>
+
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-icon @click="expireExam(item)" class="mr-2" v-on="on">mdi-calendar-remove</v-icon>
@@ -80,17 +76,25 @@
     <v-overlay :value="processing">
       <v-progress-circular color="primary" indeterminate dark />
     </v-overlay>
+
+    <exam-access-modal v-model="show_permissions" :exam="exam" />
   </v-card>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
+import ExamAccessModal from "./ExamAccessModal";
 
 export default {
+  components: {
+    ExamAccessModal
+  },
   data() {
     return {
       loading: false,
       processing: false,
+      exam: null,
+      show_permissions: false,
       search: "",
       headers: [
         { text: "Name", value: "name", sortable: false },
@@ -148,7 +152,12 @@ export default {
           this.processing = false;
           exam.is_expired = !exam.is_expired; //restore local value if server update fails.
         });
-    }
+    },
+
+    showPermissionsModal: function(exam) {
+      this.exam = exam;
+      this.show_permissions = true;
+    },
   },
   computed: {
     ...mapGetters(["exams"])

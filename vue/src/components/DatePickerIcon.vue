@@ -1,40 +1,38 @@
 <template>
   <v-menu
-    ref="menu"
     v-model="menu"
     :close-on-content-click="false"
-    :return-value.sync="value"
+    :nudge-right="40"
     transition="scale-transition"
     offset-y
     min-width="290px"
   >
     <template v-slot:activator="{ on }">
-      <v-icon>mdi-clock</v-icon>
+      <v-text-field v-model="date" prepend-icon="mdi-calendar" readonly v-on="on"></v-text-field>
     </template>
-    <v-date-picker v-model="value" no-title scrollable>
-      <v-spacer></v-spacer>
-      <v-btn text color="primary" @click="saveDate">OK</v-btn>
-      <v-btn text color="primary" @click="menu = false">Cancel</v-btn>
-    </v-date-picker>
+    <v-date-picker v-model="date" @input="menu = false"></v-date-picker>
   </v-menu>
-</template>as
+</template>
 
 <script>
 export default {
   props: {
-    value: Boolean
+    value: String
   },
   data() {
     return {
-      menu: false
+      menu: false,
+      date: this.value == null ? null : this.value.substr(0, 10)
     };
   },
 
-  methods: {
-    saveDate(){
-      //$refs.menu.save(this.value);
-      this.$emit("input", this.value);
+  watch: {
+    value: function(val) {
+      this.date = val.substring(0, 10);
+    },
+    date: function(val) {
+      this.$emit("input", val);
     }
-  },
+  }
 };
 </script>

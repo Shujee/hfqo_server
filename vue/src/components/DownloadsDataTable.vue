@@ -1,7 +1,7 @@
 <template>
   <v-card class="ma-0 pa-0">
     <v-card-title class="ma-0 py-1">
-      <v-icon>mdi-download</v-icon>
+      <v-icon class="mr-2">mdi-download</v-icon>
       Downloads
       <v-spacer></v-spacer>
       <v-text-field
@@ -106,10 +106,4 @@ export default {
 .text-mono {
   font-family: monospace;
 }
-
-/* This style only works in non-scoped styles */
-/* see https://stackoverflow.com/questions/54508774/how-do-i-make-a-striped-table-in-vuetify-v-data-table */
-tbody tr:nth-of-type(odd) {
-   background-color: rgba(0, 0, 0, .1);
- }
 </style>

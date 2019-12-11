@@ -22,6 +22,7 @@ Route::prefix('v1')->middleware('cors')->group(function()
         Route::post('/logout', 'AuthController@logout');
 
         Route::get('/exams', 'ExamController@index');
+        Route::get('/exam/{exam}/accesses', 'ExamController@accesses');
         Route::delete('/exam/{exam}', 'ExamController@destroy');
         Route::put('/exam/{exam}', 'ExamController@update');
 
@@ -32,6 +33,11 @@ Route::prefix('v1')->middleware('cors')->group(function()
 
         Route::get('/downloads', 'DownloadController@index');
         Route::get('/uploads', 'UploadController@index');
+
+        Route::post('/access', 'AccessController@store');
+        Route::put('/access/{access}', 'AccessController@update');
+        Route::delete('/access/{access}', 'AccessController@destroy');
+        Route::post('/access/update_bulk', 'AccessController@update_bulk');
     });
 });
 

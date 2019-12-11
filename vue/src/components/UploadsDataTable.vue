@@ -1,7 +1,7 @@
 <template>
   <v-card class="ma-0 pa-0">
     <v-card-title class="ma-0 py-1">
-    <v-icon>mdi-upload</v-icon>
+    <v-icon class="mr-2">mdi-upload</v-icon>
       Uploads
       <v-spacer></v-spacer>
       <v-text-field

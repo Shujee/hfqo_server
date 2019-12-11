@@ -24,4 +24,11 @@
     }
 8.  Install Vue Router
 9.  Install Vuex
-10. 
+10. After every migrate:reset, run this command: 
+    1. php artisan passport:install
+    2. Now copy Password grant client secret to .ENV file.
+
+
+===========================================================================================================================================================================
+SSH connection to hfqserver production server
+ssh u154749831@46.17.175.43 -p 65002 -i "F:\Hosting\Hostinger\hfqserver.com private key SSH.ppk"

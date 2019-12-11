@@ -124,6 +124,8 @@ export default {
 
   watch: {
     show: function(val) {
+      this.processing = false;
+
       if (val) {
         this.local_user = JSON.parse(JSON.stringify(this.user)); //create a copy
         this.local_user.confirmPassword = this.user.password;
@@ -140,10 +142,6 @@ export default {
     }
   },
 
-  created() {
-    this.processing = false;
-  },
-
   methods: {
     createUser() {
       if (this.$refs.form.validate()) {
@@ -156,18 +154,7 @@ export default {
             this.show = false;
           })
           .catch(err => {
-            var msg;
-
-            if (err.response.status == 401) msg = "Unauthorized access";
-            else if (err.response.status == 422) msg = err.response.data.errors;
-            else msg = "An error occurred. Check your Internet connection.";
-
-            this.$root.$confirm.open("Error", msg, {
-              color: "red",
-              show_cancel: false,
-              icon: "mdi-alert-circle"
-            });
-
+            this.$root.$confirm.openErr(err);
             this.processing = false;
           });
       }
@@ -184,18 +171,7 @@ export default {
             this.show = false;
           })
           .catch(err => {
-            var msg;
-
-            if (err.response.status == 401) msg = "Unauthorized access";
-            else if (err.response.status == 422) msg = err.response.data.errors;
-            else msg = "An error occurred. Check your Internet connection.";
-
-            this.$root.$confirm.open("Error", msg, {
-              color: "red",
-              show_cancel: false,
-              icon: "mdi-alert-circle"
-            });
-
+            this.$root.$confirm.openErr(err);
             this.processing = false;
           });
       }

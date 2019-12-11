@@ -64,6 +64,27 @@ export default {
         this.reject = reject;
       });
     },
+    openErr(err) {
+      this.show = true;
+      this.title = 'Error';
+
+      if (err.response.status == 401) this.message = "Unauthorized access";
+      else if (err.response.status == 422)
+        this.message = err.response.data.errors;
+      else this.message = "An error occurred. Check your Internet connection.";
+
+      this.options = {
+        color: "red",
+        show_cancel: false,
+        icon: "mdi-alert-circle",
+        width: 450
+      };
+
+      return new Promise((resolve, reject) => {
+        this.resolve = resolve;
+        this.reject = reject;
+      });
+    },
     agree() {
       this.resolve(true);
       this.show = false;

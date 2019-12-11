@@ -106,17 +106,8 @@ export default {
             this.$router.push("/");
           })
           .catch(err => {
-            var msg;
-            if (err.response.status == 401)
-              msg = "Invalid e-mail and/or password";
-            else msg = "An error occurred. Check your Internet connection.";
-
             this.logging_in = false;
-            this.$root.$confirm.open("Error", msg, {
-              color: "red",
-              show_cancel: false,
-              icon: "mdi-alert-circle"
-            });
+            this.$root.$confirm.openErr(err);
           });
       }
     }
