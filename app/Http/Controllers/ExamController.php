@@ -7,8 +7,12 @@ use Illuminate\Http\Request;
 use App\Http\Resources\Exam as ExamResource;
 use App\Http\Resources\Access as AccessResource;
 
+require_once 'RequestIPTrait.php';
+
 class ExamController extends Controller
 {
+    use RequestIP;
+
     /**
      * Display a listing of the resource.
      *
@@ -38,7 +42,21 @@ class ExamController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|unique:exams',
+            'qa_count' => 'required',
+            'xps_content' => 'required',
+            'xml_content' => 'required',
+            
+        ],
+        [
+            'machine_name.required' => 'Machine name must be supplied.',
+            'exam_id.required' => 'exam_id is required',
+            'exam_id.integer' => 'exam_id is not correct',
+            'exam_id.exists' => 'exam_id is not correct',
+            'result' => 'result is required'
+        ]);
+
     }
 
     /**
@@ -48,17 +66,6 @@ class ExamController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show(Exam $exam)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Exam  $exam
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Exam $exam)
     {
         //
     }
@@ -99,5 +106,58 @@ class ExamController extends Controller
         $res = AccessResource::collection($Accesses);
 
         return $res;
+    }
+
+    /**
+     * Returns XPS and XML files of the specified exam if current user has been granted access to this exam.
+     *
+     * @param  \App\Exam  $exam
+     * @return \Illuminate\Http\Response
+     */
+    public function download(Request $request, Exam $exam)
+    {
+        $request->validate([
+            'machine_name' => 'required',
+        ],
+        [
+            'machine_name.required' => 'Machine name must be supplied.',
+        ]);
+
+        if($exam->trashed()){
+            return response()->json([
+                'error' => 'The specified master file has been deleted.'
+            ], 422);
+        }
+        else if($exam->is_expired){
+            return response()->json([
+                'error' => 'The specified master file has expired.'
+            ], 422);
+        }
+        else {
+            //Locate the Access row for current User and Exam
+            $MyAccess = $exam->GetFirstValidAccess($request->user(), $exam->id);
+
+            if($MyAccess == null){
+                return response()->json([
+                    'error' => 'You do not have access to the specified master file.'
+                ], 422);    
+            }
+            else {
+                //record download activity
+                $DL = new \App\Download;
+                $DL->access_id = $MyAccess->id;
+                $DL->ip = getIp();
+                $DL->machine_name = $request['machine_name'];
+                $DL->save();
+
+                $xps = Storage::disk('local')->get('xps', $exam->xps_file_name);
+                $xml = Storage::disk('local')->get('xml', $exam->xml_file_name);
+    
+                return response()->json([
+                    'xps'=> $xps,
+                    'xml'=> $xml
+                ]);    
+            }
+        }
     }
 }

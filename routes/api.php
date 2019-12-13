@@ -14,17 +14,19 @@ use Illuminate\Http\Request;
 */
 Route::prefix('v1')->middleware('cors')->group(function()
 {
-    Route::post('/login', 'AuthController@login')->middleware('throttle:15,5');
-    Route::post('/register', 'AuthController@register')->middleware('throttle:112,10');    
+    Route::post('/login', 'AuthController@login')->middleware('throttle:15,5')->name('login');
+    Route::post('/register', 'AuthController@register')->middleware('throttle:112,10')->name('register');    
 
     Route::group(['middleware' => 'auth:api'], function()
     {
         Route::post('/logout', 'AuthController@logout');
 
         Route::get('/exams', 'ExamController@index');
-        Route::get('/exam/{exam}/accesses', 'ExamController@accesses');
+        Route::post('/exam', 'ExamController@store');
         Route::delete('/exam/{exam}', 'ExamController@destroy');
         Route::put('/exam/{exam}', 'ExamController@update');
+        Route::get('/exam/{exam}/accesses', 'ExamController@accesses');
+        Route::get('/exam/{exam}/download', 'ExamController@download');
 
         Route::get('/users', 'UserController@index');
         Route::delete('/user/{user}', 'UserController@destroy');
@@ -38,9 +40,9 @@ Route::prefix('v1')->middleware('cors')->group(function()
         Route::put('/access/{access}', 'AccessController@update');
         Route::delete('/access/{access}', 'AccessController@destroy');
         Route::post('/access/update_bulk', 'AccessController@update_bulk');
-    });
-});
+        
+        Route::post('/upload', 'UploadController@store');
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+        
+    });
 });

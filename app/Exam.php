@@ -27,4 +27,19 @@ class Exam extends Model
     {
         return $this->hasMany('App\Access');
     }
+
+    /**
+     * Returns first Access row for the specified user and exam
+     * that is currently valid, i.e. current date/time falls within 
+     * "start" and "end" values of the Access row.
+     * @param [type] $user_id
+     * @return void
+    */
+    public function GetFirstValidAccess($user_id, $exam_id) {
+        return $this->Accesses()->
+            where('user_id', $user_id)->
+            where('exam_id', $exam_id)->
+            where('start', '<=', now())->
+            where('end', '>=', now())->first();
+    }
 }
