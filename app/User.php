@@ -44,4 +44,9 @@ class User extends Authenticatable
     {
         return $this->hasMany('App\Access');
     }
+
+    public function isAdmin() 
+    {
+        return $this->id == 1;
+    }
 }

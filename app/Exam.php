@@ -35,11 +35,25 @@ class Exam extends Model
      * @param [type] $user_id
      * @return void
     */
-    public function GetFirstValidAccess($user_id, $exam_id) {
+    public function GetFirstValidAccess($user_id) {
         return $this->Accesses()->
             where('user_id', $user_id)->
-            where('exam_id', $exam_id)->
+            where('exam_id', $this->id)->
             where('start', '<=', now())->
             where('end', '>=', now())->first();
+    }
+
+    /**
+     * Returns true if an Access row exists for this Exam and the specified user.
+     *
+     * @param [type] $user_id
+     * @return void
+     */
+    public function ValidAccessExists($user_id) {
+        return $this->Accesses()->
+            where('user_id', $user_id)->
+            where('exam_id', $this->id)->
+            where('start', '<=', now())->
+            where('end', '>=', now())->exists();
     }
 }

@@ -135,7 +135,7 @@ class ExamController extends Controller
         }
         else {
             //Locate the Access row for current User and Exam
-            $MyAccess = $exam->GetFirstValidAccess($request->user(), $exam->id);
+            $MyAccess = $exam->GetFirstValidAccess($request->user());
 
             if($MyAccess == null){
                 return response()->json([
