@@ -52,7 +52,7 @@ class ExamController extends Controller
         ],
         [
             'name.required' => 'Name of the master file must be supplied.',
-            'name.unique' => 'Specified master file already exists on the server.',
+            'name.unique' => 'A master file with this name already exists on the server.',
             'qa_count.required' => 'qa_count is required',
             'xps_content.file' => 'XPS flie must be supplied',
             'xml_content.file' => 'XML flie must be supplied',
@@ -65,19 +65,10 @@ class ExamController extends Controller
         $Exam->name = $request['name'];
         $Exam->qa_count = $request['qa_count'];
 
-        $TempXPSFile = $request->file('xps_file_name')->store('xps');
-        $XPSFile = str_replace('.bin', '.xps', $Exam->xps_file_name);
-
-        //Laravel doesn't understand XPS files (even when Content-Type is specified in the request), 
-        //so we're manually changing extension here.
-        Storage::move($TempXPSFile, $XPSFile);
-        $Exam->xps_file_name = $XPSFile;
-
+        $Exam->xps_file_name = $request->file('xps_file_name')->store('xps');
         $Exam->xml_file_name = $request->file('xml_file_name')->store('xml');
 
         $Exam->save();
-
-        return response()->json('success', 201);
     }
 
     /**
