@@ -23,6 +23,14 @@ class UsersTableSeeder extends Seeder
             $bar->advance();
         });
 
+        //CREATE MAIN TEST USER
+        $u2 = new App\User;
+        $u2->name = 'Test User';
+        $u2->email = 'shujee@gmail.com';
+        $u2->password = \Illuminate\Support\Facades\Hash::make('12345678');
+        $u2->save();       
+        $this->command->getOutput()->writeln("<info>Created test user</info>");
+
         $bar->finish();
         $this->command->getOutput()->writeln("Users created.");
     }

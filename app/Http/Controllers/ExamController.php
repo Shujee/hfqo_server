@@ -6,8 +6,10 @@ use App\Exam;
 use Illuminate\Http\Request;
 use App\Http\Resources\Exam as ExamResource;
 use App\Http\Resources\Access as AccessResource;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
-require_once 'RequestIPTrait.php';
+require_once __DIR__ .'/RequestIPTrait.php';
 
 class ExamController extends Controller
 {
@@ -45,18 +47,37 @@ class ExamController extends Controller
         $request->validate([
             'name' => 'required|unique:exams',
             'qa_count' => 'required',
-            'xps_content' => 'required',
-            'xml_content' => 'required',
-            
+            'xps_content' => 'file',
+            'xml_content' => 'file',
         ],
         [
-            'machine_name.required' => 'Machine name must be supplied.',
-            'exam_id.required' => 'exam_id is required',
-            'exam_id.integer' => 'exam_id is not correct',
-            'exam_id.exists' => 'exam_id is not correct',
-            'result' => 'result is required'
+            'name.required' => 'Name of the master file must be supplied.',
+            'name.unique' => 'Specified master file already exists on the server.',
+            'qa_count.required' => 'qa_count is required',
+            'xps_content.file' => 'XPS flie must be supplied',
+            'xml_content.file' => 'XML flie must be supplied',
         ]);
 
+        //record download activity
+        $Exam = new \App\Exam();
+
+        $Exam->is_expired = false;
+        $Exam->name = $request['name'];
+        $Exam->qa_count = $request['qa_count'];
+
+        $TempXPSFile = $request->file('xps_file_name')->store('xps');
+        $XPSFile = str_replace('.bin', '.xps', $Exam->xps_file_name);
+
+        //Laravel doesn't understand XPS files (even when Content-Type is specified in the request), 
+        //so we're manually changing extension here.
+        Storage::move($TempXPSFile, $XPSFile);
+        $Exam->xps_file_name = $XPSFile;
+
+        $Exam->xml_file_name = $request->file('xml_file_name')->store('xml');
+
+        $Exam->save();
+
+        return response()->json('success', 201);
     }
 
     /**
@@ -116,12 +137,19 @@ class ExamController extends Controller
      */
     public function download(Request $request, Exam $exam)
     {
-        $request->validate([
-            'machine_name' => 'required',
-        ],
-        [
-            'machine_name.required' => 'Machine name must be supplied.',
-        ]);
+        if(!$request->filled('machine_name')) {
+            return response()->json([
+                'error' => 'Machine name must be supplied.'
+            ], 422);
+        }
+
+        $IP = $this->getIp();
+        if($IP == null){
+            Log::debug('Client IP could not be resolved.');
+            return response()->json([
+                'error' => 'An internal error occurred. Contact administrator for more help.'
+            ], 422);
+        }
 
         if($exam->trashed()){
             return response()->json([
@@ -135,7 +163,7 @@ class ExamController extends Controller
         }
         else {
             //Locate the Access row for current User and Exam
-            $MyAccess = $exam->GetFirstValidAccess($request->user());
+            $MyAccess = $exam->GetFirstValidAccess($request->user()->id);
 
             if($MyAccess == null){
                 return response()->json([
@@ -146,7 +174,7 @@ class ExamController extends Controller
                 //record download activity
                 $DL = new \App\Download;
                 $DL->access_id = $MyAccess->id;
-                $DL->ip = getIp();
+                $DL->ip = $IP;
                 $DL->machine_name = $request['machine_name'];
                 $DL->save();
 

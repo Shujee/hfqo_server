@@ -35,6 +35,14 @@ class AccessesTableSeeder extends Seeder
             $bar->advance();
         });
 
+        //Crete Access for Test User / first master file
+        $acc = new \App\Access;
+        $acc->user_id = \App\User::where('name', 'Test User')->first()->id;
+        $acc->exam_id = \App\Exam::first()->id;
+        $acc->start = $faker->dateTimeBetween($startDate = '-2 months', $endDate = 'now', $timezone = null);
+        $acc->end = $acc->start->addDays($faker->numberBetween($min = 100, $max = 200));
+        $acc->save();
+
         $bar->finish();
         $this->command->getOutput()->writeln("Exams created.");
     }

@@ -29,10 +29,12 @@
       :sort-desc="[true]"
     >
       <template v-slot:item.name="{ item }">
+        <div class="ellipsis">
         <v-avatar size="32">
           <v-icon>mdi-file-document</v-icon>
         </v-avatar>
-        <span class="pl-4">{{ item.name }}</span>
+        <span class="pl-4 ellipsis">{{ item.name }}</span>
+        </div>
       </template>
    
       <template v-slot:item.is_expired="{ item }">
@@ -98,8 +100,6 @@ export default {
       search: "",
       headers: [
         { text: "Name", value: "name", sortable: false },
-        { text: "XPS File", value: "xps_file_name", sortable: false },
-        { text: "XML File", value: "xml_file_name", sortable: false },
         {
           text: "QA Count",
           value: "qa_count",
@@ -171,3 +171,9 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.cell {
+    text-overflow: ellipsis;
+}
+</style>
