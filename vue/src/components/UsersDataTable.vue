@@ -45,6 +45,10 @@
         <span class="pl-4">{{ item.name }}</span>
       </template>
 
+      <template v-slot:item.type="{ item }">
+         <v-chip :color="getColor(item.type)" dark>{{ item.type == 1 ? 'Admin' : (item.type == 2 ? 'Associate' : 'User') }}</v-chip>
+      </template>
+
       <template v-slot:item.updated_at="{ item }">
         <v-layout justify-center>
           <v-chip success outlined ml-3>
@@ -99,6 +103,7 @@ export default {
       headers: [
         { text: "Name", value: "name", sortable: false },
         { text: "Email", value: "email", sortable: false },
+        { text: "Type", value: "type", sortable: false, align: 'center' },
         {
           text: "Last Updated",
           value: "updated_at",
@@ -111,6 +116,12 @@ export default {
   },
 
   methods: {
+    getColor (type) {
+      if (type == 1) return 'red'
+      else if (type == 2) return 'blue'
+      else return 'green'
+    },
+
     deleteUser: async function(user) {
       if (
         await this.$root.$confirm.open(

@@ -99,7 +99,17 @@ export default {
       show_permissions: false,
       search: "",
       headers: [
-        { text: "Name", value: "name", sortable: false },
+        { 
+          text: "Name", 
+          value: "name", 
+          sortable: false 
+        },
+        {
+          text: "Uploaded By",
+          value: "uploader",
+          align: "center",
+          sortable: false
+        },
         {
           text: "QA Count",
           value: "qa_count",

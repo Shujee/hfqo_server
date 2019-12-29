@@ -15,11 +15,16 @@ class ExamsTableSeeder extends Seeder
     {
         $faker = \Faker\Factory::create();
 
+        $Uploaders = User::where('type', User::USERTYPE_UPLOADER)->pluck('id')->toArray();
+
         //Create 100 exams
         $TotalExams = 100;
         $this->command->getOutput()->writeln("<info>Creating exams</info>");
         $bar = $this->command->getOutput()->createProgressBar($TotalExams);
-        factory(Exam::class, $TotalExams)->create()->each(function ($e) use (&$bar) {
+        factory(Exam::class, $TotalExams)->make()->each(function ($exam) use (&$bar, &$faker, &$Uploaders) {
+            $exam->uploader_id = $faker->randomElement($Uploaders);
+            $exam->save();
+
             $bar->advance();
         });
 

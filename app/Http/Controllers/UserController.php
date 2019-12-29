@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Resources\User as UserResource;
+use App\Upload;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 
@@ -17,7 +18,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $Users = User::where('id', '!=', 1)->get(); //return all users except admin
+        $Users = User::where('id', '!=', 1)->get(); //return all users except super admin
         return UserResource::collection($Users);
     }
 
@@ -83,6 +84,7 @@ class UserController extends Controller
         );    
 
         $user->name = $request['name'];
+        $user->type = $request['type'];
 
         if($request['password'] !== null && $request['password'] !== "") {
 
@@ -112,7 +114,39 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        if($user->id != 1)
+        if($user->type != User::USERTYPE_ADMIN)
             $user->delete();
+    }
+
+     /**
+     * Returns the list of exams that current user can download
+     *
+     * @param  \App\Exam  $exam
+     * @return \Illuminate\Http\Response
+     */
+    public function myexamsdl()
+    {
+        if(!request()->user()->trashed()) {
+            return request()->user()->myExamsDL();
+        }
+        else {
+            return response()->json(['error' => 'Not authorized.'], 403);
+        }
+    }
+
+    /**
+     * Returns the exams that were uploaded by the current user
+     *
+     * @param  \App\Exam  $exam
+     * @return \Illuminate\Http\Response
+     */
+    public function myexamsul()
+    {
+        if(!request()->user()->trashed()) {
+            return request()->user()->myExamsUL();
+        }
+        else {
+            return response()->json(['error' => 'Not authorized.'], 403);
+        }
     }
 }

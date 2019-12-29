@@ -34,6 +34,18 @@ class AccessPolicy
     }
 
     /**
+     * Determine whether the user owns this access and therefore can download the exam files.
+     *
+     * @param User $user
+     * @param Access $access
+     * @return void
+     */
+    public function download(User $user, Access $access)
+    {
+        return $user->isAdmin() || (!$user->trashed() && $access->isValid($user->id));
+    }
+
+    /**
      * Determine whether the user can create accesses.
      *
      * @param  \App\User  $user

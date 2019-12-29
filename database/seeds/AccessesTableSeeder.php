@@ -15,10 +15,10 @@ class AccessesTableSeeder extends Seeder
         $faker = \Faker\Factory::create();
 
         //get all user ids except admin
-        $users = User::where('id', '!=', 1)->pluck('id')->toArray();
+        $users = User::where('type', User::USERTYPE_DOWNLOADER)->pluck('id')->toArray();
         $exams = Exam::where('is_expired', false)->pluck('id')->toArray();
 
-        //Create 100 exams
+        //Create 100 accesses
         $TotalAccesses = 100;
         
         $this->command->getOutput()->writeln("<info>Creating Access Rules</info>");
@@ -35,9 +35,9 @@ class AccessesTableSeeder extends Seeder
             $bar->advance();
         });
 
-        //Crete Access for Test User / first master file
+        //Create Access for Test User / first master file
         $acc = new \App\Access;
-        $acc->user_id = \App\User::where('name', 'Test User')->first()->id;
+        $acc->user_id = \App\User::where('name', 'Test Downloader')->first()->id;
         $acc->exam_id = \App\Exam::first()->id;
         $acc->start = $faker->dateTimeBetween($startDate = '-2 months', $endDate = 'now', $timezone = null);
         $acc->end = $acc->start->addDays($faker->numberBetween($min = 100, $max = 200));

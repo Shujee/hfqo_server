@@ -5,9 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use \App\Access;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\RequestIP;
 
 class AccessController extends Controller
 {
+    use RequestIP;
+
     /**
      * Display a listing of the resource.
      *
@@ -108,6 +113,78 @@ class AccessController extends Controller
                     $Access->start = Carbon::parse($Acc['start']);
                     $Access->end = Carbon::parse($Acc['end']);
                     $Access->save();
+                }
+            }
+        }
+    }
+
+        /**
+     * Returns XPS and XML files of the specified exam if current user has been granted access to this exam.
+     *
+     * @param  \App\Exam  $exam
+     * @return \Illuminate\Http\Response
+     */
+    public function download(Request $request, Access $access)
+    {
+        if(!$request->filled('machine_name')) {
+            return response()->json([
+                'error' => 'Machine name must be supplied.'
+            ], 422);
+        }
+
+        $IP = $this->getIp();
+        if($IP == null){
+            Log::debug('Client IP could not be resolved.');
+            return response()->json([
+                'error' => 'An internal error occurred. Contact administrator for more help.'
+            ], 422);
+        }
+
+        $exam = $access->Exam;
+
+        if($exam->trashed()){
+            return response()->json([
+                'error' => 'The specified master file has been deleted.'
+            ], 422);
+        }
+        else if($exam->is_expired){
+            return response()->json([
+                'error' => 'The specified master file has expired.'
+            ], 422);
+        }
+        else {
+            //Locate the Access row for current User and Exam
+            $MyAccess = $exam->GetFirstValidAccess($request->user()->id);
+
+            if($MyAccess == null){
+                return response()->json([
+                    'error' => 'You do not have access to the specified master file.'
+                ], 422);    
+            }
+            else {
+                //record download activity
+                $DL = new \App\Download;
+                $DL->access_id = $MyAccess->id;
+                $DL->ip = $IP;
+                $DL->machine_name = $request['machine_name'];
+                $DL->save();
+
+                $xps = Storage::disk('local')->get($exam->xps_file_name);
+                $xml = Storage::disk('local')->get($exam->xml_file_name);
+
+                if($xps !== false && $xml !== false) {
+                    $xps64 = base64_encode($xps);
+                    $xml64 = base64_encode($xml);
+        
+                    return response()->json([
+                        'xps'=> $xps64,
+                        'xml'=> $xml64
+                    ]);    
+                }
+                else {
+                    return response()->json([
+                        'error' => 'Specified master file does not exist on the server. Please contact server administrator.'
+                    ], 422);        
                 }
             }
         }

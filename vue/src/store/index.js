@@ -79,6 +79,7 @@ export default new Vuex.Store({
             {
                 MyUser.name = user.name;
                 MyUser.password = user.password;
+                MyUser.type = user.type;
             }
         },
        

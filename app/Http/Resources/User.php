@@ -20,6 +20,7 @@ class User extends JsonResource
             'email' => $this->email,
             'updated_at' => $this->updated_at,
             'age' => $this->updated_at->diffForHumans(),
+            'type' => $this->type
         ];
     }
 }

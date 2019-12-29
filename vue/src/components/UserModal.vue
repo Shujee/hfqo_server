@@ -60,6 +60,15 @@
             :rules="editMode? [rules.password, rules.confirm] : [rules.required, rules.password, rules.confirm]"
             validate-on-blur
           ></v-text-field>
+
+          <v-select
+            id='type'
+            name='type'
+            prepend-icon="mdi-account-supervisor"
+            :items= "usertypes"
+            v-model="local_user.type"
+            label="Type"
+          ></v-select>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -87,9 +96,15 @@ export default {
         id: null,
         name: null,
         email: null,
-        password: null
+        password: null,
+        type: null
       },
       confirmPassword: null,
+      usertypes: [
+        {text: 'Admin', value: 1},
+        {text: 'Associate', value: 2},
+        {text: 'User', value: 3},
+      ],
       rules: {
         required: v => !!v || "Required.",
         email: v => /.+@.+\..+/.test(v) || "E-mail must be valid",

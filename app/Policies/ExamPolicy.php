@@ -41,7 +41,7 @@ class ExamPolicy
      */
     public function create(User $user)
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isUploader();
     }
 
     /**
@@ -53,7 +53,7 @@ class ExamPolicy
      */
     public function update(User $user, Exam $exam)
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || ($user->isUploader() && $exam->uploader_id == $user->id);
     }
 
     /**

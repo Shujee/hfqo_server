@@ -62,37 +62,6 @@ class AuthController extends Controller
         }
     }
 
-    public function register(Request $request)
-    {
-        $ValidationResult = null;
-
-        // 1. Must be in 11-digits format: 03XXXXXXXXX.
-        // 2. Must NOT already exist in users table.
-        $v = Validator::make($request->all(), [
-            'email' => 'regex:' . \Globals::REGEX_MOBILE_NUMBER . '|unique:users',
-        ],
-        [
-            'email.regex' => \Globals::REGEX_MOBILE_NUMBER_MSG,
-            'email.unique' => 'This email is already registered.',
-        ]);
-
-        if ($v->fails())
-            $ValidationResult = $v->errors();
-        else
-            $ValidationResult = true;
-
-        if($ValidationResult === true)
-        {
-            //$U = User::CreateFromMobileNumber($request->mobile);
-
-            return response()->json([
-                'message' => 'success'
-            ], 201);
-        }
-        else
-            return response()->json($ValidationResult, 422);
-    }
-
     public function logout()
     {
         $U = auth()->user();

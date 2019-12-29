@@ -13,6 +13,10 @@ class User extends Authenticatable
     use HasApiTokens, Notifiable;
     use SoftDeletes;
 
+    public const USERTYPE_ADMIN = 1;
+    public const USERTYPE_UPLOADER = 2;
+    public const USERTYPE_DOWNLOADER = 3;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -47,6 +51,29 @@ class User extends Authenticatable
 
     public function isAdmin() 
     {
-        return $this->id == 1;
+        return $this->type == User::USERTYPE_ADMIN;
+    }
+
+    public function isUploader()
+    {
+        return $this->type == User::USERTYPE_UPLOADER;
+    }
+
+    public function myExamsDL()
+    {
+        return $this->Accesses()->with('exam:id,name')->
+                    where('start', '<=', now())->
+                    where('end', '>=', now())->
+                    select(['id', 'exam_id'])->
+                    get()->
+                    filter(function($value, $key) { return !$value->is_expired;})->
+                    pluck('exam.name', 'id');
+    }
+
+    public function MyExamsUL()
+    {
+        return Exam::where('is_expired', false)->
+                        where('uploader_id', $this->id)->
+                        pluck('name', 'id');;
     }
 }

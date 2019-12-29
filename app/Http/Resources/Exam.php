@@ -23,6 +23,7 @@ class Exam extends JsonResource
             'is_expired' => $this->is_expired,
             'updated_at' => $this->updated_at,
             'age' => $this->updated_at->diffForHumans(),
+            'uploader' => $this->Uploader->name
         ];
     }
 }

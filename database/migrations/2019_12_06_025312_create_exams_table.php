@@ -20,9 +20,12 @@ class CreateExamsTable extends Migration
             $table->string('xml_file_name');
             $table->integer('qa_count');
             $table->boolean('is_expired');
+            $table->bigInteger('uploader_id')->unsigned();
 
             $table->timestamps();
             $table->softDeletes();
+
+            $table->foreign('uploader_id')->references('id')->on('users');
         });
     }
 

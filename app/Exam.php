@@ -28,6 +28,11 @@ class Exam extends Model
         return $this->hasMany('App\Access');
     }
 
+    public function Uploader()
+    {
+        return $this->belongsTo('App\User');
+    }
+
     /**
      * Returns first Access row for the specified user and exam
      * that is currently valid, i.e. current date/time falls within 
