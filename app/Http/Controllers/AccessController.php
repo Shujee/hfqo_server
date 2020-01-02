@@ -177,6 +177,7 @@ class AccessController extends Controller
                     $xml64 = base64_encode($xml);
         
                     return response()->json([
+                        'exam_id' => $exam->id,
                         'xps'=> $xps64,
                         'xml'=> $xml64
                     ]);    

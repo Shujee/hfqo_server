@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Log;
 
 class ExamController extends Controller
 {
+    use RequestIP;
+    
     /**
      * Display a listing of the resource.
      *
@@ -39,29 +41,30 @@ class ExamController extends Controller
      */
     public function store(Request $request)
     {
-        if(!$request->user()->isUploader()){
+        if (!$request->user()->isUploader()) {
             Log::alert("{$request->user()->name}  (id={$request->user()->id}) tried to upload a new master file.");
 
             return response()->json([
                 'error' => 'Not allowed.'
             ], 403);
         }
-        
-        $request->validate([
-            'name' => 'required|unique:exams',
-            'qa_count' => 'required',
-            'xps_content' => 'file',
-            'xml_content' => 'file',
-        ],
-        [
-            'name.required' => 'Name of the master file must be supplied.',
-            'name.unique' => 'A master file with this name already exists on the server.',
-            'qa_count.required' => 'qa_count is required',
-            'xps_content.file' => 'XPS flie must be supplied',
-            'xml_content.file' => 'XML flie must be supplied',
-        ]);
 
-        //record download activity
+        $request->validate(
+            [
+                'name' => 'required|unique:exams',
+                'qa_count' => 'required',
+                'xps_content' => 'file',
+                'xml_content' => 'file',
+            ],
+            [
+                'name.required' => 'Name of the master file must be supplied.',
+                'name.unique' => 'A master file with this name already exists on the server.',
+                'qa_count.required' => 'qa_count is required',
+                'xps_content.file' => 'XPS flie must be supplied',
+                'xml_content.file' => 'XML flie must be supplied',
+            ]
+        );
+
         $Exam = new \App\Exam();
 
         $Exam->uploader_id = $request->user()->id;
@@ -74,6 +77,116 @@ class ExamController extends Controller
         $Exam->xml_file_name = $request->file('xml_file_name')->store('xml');
 
         $Exam->save();
+    }
+
+    /**
+     * Updates the XPS and XML files of existing exam.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function update_files(Request $request, Exam $exam)
+    {
+        if (!$request->user()->isUploader()) {
+            Log::alert("{$request->user()->name} (id={$request->user()->id}) tried to update {$exam->name} (id={$exam->id}).");
+
+            return response()->json([
+                'error' => 'Not allowed.'
+            ], 403);
+        } else if ($exam->is_expired) {
+            return response()->json([
+                'error' => 'Specified master file has expired.'
+            ], 403);
+        }
+
+        $request->validate(
+            [
+                'qa_count' => 'required',
+                'xps_content' => 'file',
+                'xml_content' => 'file',
+            ],
+            [
+                'qa_count.required' => 'qa_count is required',
+                'xps_content.file' => 'XPS flie must be supplied',
+                'xml_content.file' => 'XML flie must be supplied',
+            ]
+        );
+
+        if ($exam->uploader_id == $request->user()->id) {
+            $exam->qa_count = $request['qa_count'];
+
+            $exam->xps_file_name = $request->file('xps_content')->store('xps');
+            $exam->xml_file_name = $request->file('xml_content')->store('xml');
+
+            $exam->save();
+        } else {
+            return response()->json([
+                'error' => 'Not allowed.'
+            ], 403);
+        }
+    }
+
+        /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function upload_result(Request $request, Exam $exam)
+    {
+        if($request->user()->trashed()) {
+            return response()->json([
+                'error' => 'You are not allowed to perform this operation.'
+            ], 422);
+        }
+
+        $request->validate([
+            'machine_name' => 'required',
+            'result' => 'required'
+        ],
+        [
+            'machine_name.required' => 'Machine name must be supplied.',
+            'result' => 'result is required'
+        ]);
+
+        if($exam->trashed()){
+            return response()->json([
+                'error' => 'The specified master file has been deleted.'
+            ], 422);
+        }
+        else if($exam->is_expired){
+            return response()->json([
+                'error' => 'The specified master file has expired.'
+            ], 422);
+        }
+        else {
+            //Locate the Access row for current User and Exam
+            $MyAccess = $exam->GetFirstValidAccess($request->user()->id);
+
+            if($MyAccess == null){
+                return response()->json([
+                    'error' => 'You do not have access to the specified master file.'
+                ], 422);    
+            }
+            else {
+                //record upload activity
+                $UL = new \App\Upload;
+                $UL->access_id = $MyAccess->id;
+                $UL->ip = $this->getIp();
+                $UL->machine_name = $request['machine_name'];
+                $UL->save();
+
+                $result = json_decode($request['result'], true);
+
+                //insert all result rows in UploadRow table
+                foreach ($result as $r) {
+                    $r['upload_id'] = $UL->id;
+                    \App\UploadRow::create($r);    
+                }
+
+                return response()->json('success', 201);
+            }
+        }
     }
 
     /**

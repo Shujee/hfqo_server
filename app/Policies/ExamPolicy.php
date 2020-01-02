@@ -91,4 +91,21 @@ class ExamPolicy
     {
         return false;
     }
+
+        /**
+     * Determine whether the user can create uploads.
+     *
+     * @param  \App\User  $user
+     * @return mixed
+     */
+    public function uploadResult(User $user, Exam $exam)
+    {
+        if($user->trashed())
+            return false;
+
+        if($exam->trashed() || $exam->is_expired)
+            return false;
+        else
+            return $exam->ValidAccessExists($user->id);
+    }
 }
