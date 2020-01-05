@@ -27,7 +27,7 @@ class UsersTableSeeder extends Seeder
         $u2 = new User;
         $u2->name = 'Test Uploader';
         $u2->type = \App\User::USERTYPE_UPLOADER;
-        $u2->email = 'shujee@gmail.com';
+        $u2->email = 'up@hfqserver.com';
         $u2->password = \Illuminate\Support\Facades\Hash::make('12345678');
         $u2->save();       
         $this->command->getOutput()->writeln("<info>Created test uploader</info>");
@@ -36,7 +36,7 @@ class UsersTableSeeder extends Seeder
         $u2 = new User;
         $u2->name = 'Test Downloader';
         $u2->type = \App\User::USERTYPE_DOWNLOADER;
-        $u2->email = 'msofficepro2@gmail.com';
+        $u2->email = 'down@hfqserver.com';
         $u2->password = \Illuminate\Support\Facades\Hash::make('12345678');
         $u2->save();       
         $this->command->getOutput()->writeln("<info>Created test downloader</info>");

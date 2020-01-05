@@ -15,8 +15,16 @@ class DatabaseSeeder extends Seeder
         $u1 = new App\User;
         $u1->name = 'HFQ Admin';
         $u1->type = \App\User::USERTYPE_ADMIN;
-        $u1->email = 'shujaat@hotmail.com';
-        $u1->password = \Illuminate\Support\Facades\Hash::make('12345678');
+
+        if(env('APP_DEBUG')) {
+            $u1->email = 'shujaat@hotmail.com';
+            $u1->password = \Illuminate\Support\Facades\Hash::make('12345678');
+        }
+        else {
+            $u1->email = 'admin@hfqserver.com';
+            $u1->password = \Illuminate\Support\Facades\Hash::make('xFM$u%7ju3Rf');
+        }
+
         $u1->save();
         $this->command->getOutput()->writeln("<info>Created admin</info>");
         
