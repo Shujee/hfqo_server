@@ -2,6 +2,15 @@ import Vue from "vue";
 import Vuex from "vuex";
 import axios from "axios";
 
+axios.default.baseURL = 'http://hfq:8080/api/v1';
+
+//Automatically adds bearer token to all axios requests
+axios.default.interceptors.request.use(function (config) {
+    const token = localStorage.getItem('token');
+    config.headers.Authorization =  token ? `Bearer ${token}` : '';
+    return config;
+  });
+
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -120,8 +129,7 @@ export default new Vuex.Store({
         },
 
         fetchExams(context) {
-            axios.defaults.headers.common["Authorization"] = "Bearer " + this.state.token;
-
+           
             return axios
                 .get("exams")
                 .then(response => {
@@ -135,9 +143,7 @@ export default new Vuex.Store({
         },
 
         deleteExam(context, id) {
-            if (context.getters.loggedIn) {
-                axios.defaults.headers.common["Authorization"] = "Bearer " + context.state.token;
-                
+            if (context.getters.loggedIn) {               
                 return axios
                     .delete('exam/' + id)
                     .then(response => {
@@ -156,8 +162,6 @@ export default new Vuex.Store({
 
         updateExam(context, exam) {
             if (context.getters.loggedIn) {
-                axios.defaults.headers.common["Authorization"] = "Bearer " + context.state.token;
-              
                 return axios
                     .put('exam/' + exam.id, exam)
                     .then(response => {
@@ -175,8 +179,6 @@ export default new Vuex.Store({
         },
       
         fetchUsers(context) {
-            axios.defaults.headers.common["Authorization"] = "Bearer " + this.state.token;
-
             return axios
                 .get("users")
                 .then(response => {
@@ -191,8 +193,6 @@ export default new Vuex.Store({
 
         deleteUser(context, id) {
             if (context.getters.loggedIn) {
-                axios.defaults.headers.common["Authorization"] = "Bearer " + context.state.token;
-                
                 return axios
                     .delete('user/' + id)
                     .then(response => {
@@ -211,8 +211,6 @@ export default new Vuex.Store({
 
         updateUser(context, user) {
             if (context.getters.loggedIn) {
-                axios.defaults.headers.common["Authorization"] = "Bearer " + context.state.token;
-             
                 return axios
                     .put('user/' + user.id, user)
                     .then(response => {
@@ -231,8 +229,6 @@ export default new Vuex.Store({
 
         createUser(context, user) {
             if (context.getters.loggedIn) {
-                axios.defaults.headers.common["Authorization"] = "Bearer " + context.state.token;
-              
                 return axios
                     .post('user', user)
                     .then(response => {
@@ -250,8 +246,6 @@ export default new Vuex.Store({
         },
 
         fetchDownloads(context) {
-            axios.defaults.headers.common["Authorization"] = "Bearer " + this.state.token;
-
             return axios
                 .get("downloads")
                 .then(response => {
@@ -265,8 +259,6 @@ export default new Vuex.Store({
         },
         
         fetchUploads(context) {
-            axios.defaults.headers.common["Authorization"] = "Bearer " + this.state.token;
-
             return axios
                 .get("uploads")
                 .then(response => {
@@ -280,8 +272,6 @@ export default new Vuex.Store({
         },
 
         fetchAccesses(context, examid) {
-            axios.defaults.headers.common["Authorization"] = "Bearer " + this.state.token;
-
             return axios
                 .get("exam/" + examid + "/accesses")
                 .then(response => {
@@ -294,8 +284,6 @@ export default new Vuex.Store({
 
         updateAccesses(context, accesses) {
             if (context.getters.loggedIn) {
-                axios.defaults.headers.common["Authorization"] = "Bearer " + context.state.token;
-
                 axios.post('access/update_bulk', accesses)
                     .then(response => {
                         return response;
