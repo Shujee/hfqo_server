@@ -2,11 +2,11 @@ import Vue from "vue";
 import Vuex from "vuex";
 import axios from "axios";
 
-axios.default.baseURL = 'http://hfqserver.com/api/v1';
+axios.default.baseURL = 'https://hfqserver.com/api/v1';
 
 //Automatically adds bearer token to all axios requests
 axios.default.interceptors.request.use(function (config) {
-    axios.default.baseURL = 'http://hfqserver.com/api/v1';
+    axios.default.baseURL = 'https://hfqserver.com/api/v1';
     const token = localStorage.getItem('token');
     config.headers.Authorization =  token ? `Bearer ${token}` : '';
     return config;
