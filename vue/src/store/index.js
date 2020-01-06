@@ -9,6 +9,7 @@ axios.baseURL = 'https://hfqserver.com/api/v1';
 axios.default.interceptors.request.use(function (config) {
     axios.default.baseURL = 'https://hfqserver.com/api/v1';
     axios.baseURL = 'https://hfqserver.com/api/v1';
+    config.baseURL = 'https://hfqserver.com/api/v1';
     const token = localStorage.getItem('token');
     config.headers.Authorization =  token ? `Bearer ${token}` : '';
     return config;
