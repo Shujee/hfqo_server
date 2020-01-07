@@ -17,6 +17,15 @@
             "port": 3306,
             "server": "localhost",
             "username": "root"
-        }
+        },
+        {
+            "database": "u154749831_hfq",
+            "dialect": "MariaDB",
+            "name": "hfqserver.com",
+            "password": "z52MYy8R%7wV",
+            "port": 3306,
+            "server": "sql240.main-hosting.eu",
+            "username": "u154749831_hfqadmin"
+        },
     ]
 }
