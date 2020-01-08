@@ -2,14 +2,9 @@ import Vue from "vue";
 import Vuex from "vuex";
 import axios from "axios";
 
-axios.default.baseURL = 'https://hfqserver.com/api/v1';
-axios.baseURL = 'https://hfqserver.com/api/v1';
-
 //Automatically adds bearer token to all axios requests
 axios.default.interceptors.request.use(function (config) {
-    axios.default.baseURL = 'https://hfqserver.com/api/v1';
-    axios.baseURL = 'https://hfqserver.com/api/v1';
-    config.baseURL = 'https://hfqserver.com/api/v1';
+    config.baseURL = process.env.VUE_APP_API_ENDPOINT;
     const token = localStorage.getItem('token');
     config.headers.Authorization =  token ? `Bearer ${token}` : '';
     return config;
@@ -24,7 +19,7 @@ export default new Vuex.Store({
         users: [],
         downloads: [],
         uploads: [],
-    },
+    }, 
     getters: {
         loggedIn: state => state.token !== null,
         exams: state => state.exams,
