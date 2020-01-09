@@ -65,7 +65,7 @@ class ExamController extends Controller
             ]
         );
 
-        $Exam = new \App\Exam();
+        $Exam = new \App\Exam;
 
         $Exam->uploader_id = $request->user()->id;
 
@@ -73,8 +73,8 @@ class ExamController extends Controller
         $Exam->name = $request['name'];
         $Exam->qa_count = $request['qa_count'];
 
-        $Exam->xps_file_name = $request->file('xps_file_name')->store('xps');
-        $Exam->xml_file_name = $request->file('xml_file_name')->store('xml');
+        $Exam->xps_file_name = $request->file('xps_content')->store('xps');
+        $Exam->xml_file_name = $request->file('xml_content')->store('xml');
 
         $Exam->save();
     }
