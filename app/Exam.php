@@ -33,6 +33,11 @@ class Exam extends Model
         return $this->belongsTo('App\User');
     }
 
+    public function QAs()
+    {
+        return $this->hasMany('App\QA');
+    }
+
     /**
      * Returns first Access row for the specified user and exam
      * that is currently valid, i.e. current date/time falls within 

@@ -5,6 +5,7 @@
     <UsersDataTable v-if="this.view == 'users'" />
     <DownloadsDataTable v-if="this.view == 'downloads'" />
     <UploadsDataTable v-if="this.view == 'uploads'" />
+    <HFQReport v-if="this.view == 'hfqreport'" />
   </v-container>
 </template>
 
@@ -14,6 +15,7 @@ import ExamsDataTable from "../components/ExamsDataTable.vue";
 import UsersDataTable from "../components/UsersDataTable.vue";
 import DownloadsDataTable from "../components/DownloadsDataTable.vue";
 import UploadsDataTable from "../components/UploadsDataTable.vue";
+import HFQReport from "../components/HFQReport.vue";
 
 export default {
   components: {
@@ -22,11 +24,12 @@ export default {
     UsersDataTable,
     DownloadsDataTable,
     UploadsDataTable,
+    HFQReport
   },
 
   data() {
     return {
-      view: "exams"
+      view: "hfqreport"
     };
   },
 

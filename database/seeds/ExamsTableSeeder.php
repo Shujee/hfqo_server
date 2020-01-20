@@ -25,6 +25,13 @@ class ExamsTableSeeder extends Seeder
             $exam->uploader_id = $faker->randomElement($Uploaders);
             $exam->save();
 
+            //Create QAs for this exam
+            factory(QA::class, $exam->qa_count)->make()->each(function ($qa, $key) use(&$exam) {
+                $qa->index = $key;
+                $qa->exam_id = $exam->id;
+                $qa->save();
+            });
+
             $bar->advance();
         });
 

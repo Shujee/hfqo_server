@@ -23,6 +23,11 @@ class ExamController extends Controller
         return ExamResource::collection($Exams);
     }
 
+    public function names()
+    {
+        return \App\Exam::select('name', 'id')->get();
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -55,6 +60,7 @@ class ExamController extends Controller
                 'qa_count' => 'required',
                 'xps_content' => 'file',
                 'xml_content' => 'file',
+                'qas' => 'required',
             ],
             [
                 'name.required' => 'Name of the master file must be supplied.',
@@ -62,6 +68,7 @@ class ExamController extends Controller
                 'qa_count.required' => 'qa_count is required',
                 'xps_content.file' => 'XPS flie must be supplied',
                 'xml_content.file' => 'XML flie must be supplied',
+                'qas.required' => 'QAs must be supplied',
             ]
         );
 
@@ -77,6 +84,9 @@ class ExamController extends Controller
         $Exam->xml_file_name = $request->file('xml_content')->store('xml');
 
         $Exam->save();
+
+        //todo: fill QAs
+        //$exam->xml_file_name = $request['qas'];
     }
 
     /**
@@ -104,11 +114,13 @@ class ExamController extends Controller
                 'qa_count' => 'required',
                 'xps_content' => 'file',
                 'xml_content' => 'file',
+                'qas' => 'required',
             ],
             [
                 'qa_count.required' => 'qa_count is required',
                 'xps_content.file' => 'XPS flie must be supplied',
                 'xml_content.file' => 'XML flie must be supplied',
+                'qas.required' => 'QAs must be supplied',
             ]
         );
 
@@ -119,6 +131,14 @@ class ExamController extends Controller
             $exam->xml_file_name = $request->file('xml_content')->store('xml');
 
             $exam->save();
+
+            $qas = json_decode($request['qas'], true);
+
+            //insert all result rows in UploadRow table
+            foreach ($qas as $qa) {
+                $r['exam_id'] = $exam->id;
+                \App\QA::create($qa);    
+            }
         } else {
             return response()->json([
                 'error' => 'Not allowed.'
@@ -173,6 +193,8 @@ class ExamController extends Controller
                 $UL = new \App\Upload;
                 $UL->access_id = $MyAccess->id;
                 $UL->ip = $this->getIp();
+                $UL->city = file_get_contents("https://ipapi.co/{$request->ip()}/city/");
+                $UL->country = file_get_contents("https://ipapi.co/{$request->ip()}/country/");
                 $UL->machine_name = $request['machine_name'];
                 $UL->save();
 
@@ -187,6 +209,34 @@ class ExamController extends Controller
                 return response()->json('success', 201);
             }
         }
+    }
+
+    public function hfqreport(Request $request)
+    {
+        $Q = \App\UploadRow 
+        ::join('uploads', 'uploadrows.upload_id', '=', 'uploads.id')
+        ->join('accesses', 'uploads.access_id', '=', 'accesses.id')
+        ->join('exams', 'accesses.exam_id', '=', 'exams.id');
+
+        if($request->filled('start')) {
+            $Q = $Q->where('uploads.created_at', '>=', $request['start']);
+        }
+        
+        if($request->filled('end')) {
+            $Q = $Q->where('uploads.created_at', '<=', $request['end']);
+        }
+
+        if($request->filled('location')) {
+            $Q = $Q->where('uploads.city', $request['location']['city']);
+            $Q = $Q->where('uploads.country', $request['location']['country']);
+        }
+
+        $Q = $Q->groupBy('exams.id', 'uploadrows.a1', 'uploadrows.a2', 'uploadrows.a3')
+            ->havingRaw('COUNT(*) > ?', [ $request['frequency'] ])
+            ->orderBy('freq', 'DESC')
+            ->selectRaw('exams.id as exam, uploadrows.a1, uploadrows.a2, uploadrows.a3, COUNT(*) as freq');
+
+        return $Q->get();
     }
 
     /**

@@ -4,7 +4,7 @@ module.exports = {
   },
 
   devServer: {
-      proxy: process.env.MIX_API_ENDPOINT,
+      proxy: process.env.VUE_APP_API_ENDPOINT,
   },
 
   outputDir: '../public',

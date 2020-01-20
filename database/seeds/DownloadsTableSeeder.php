@@ -12,6 +12,12 @@ class DownloadsTableSeeder extends Seeder
      */
     public function run()
     {
+        $SampleCities = [
+            'China' => ['Shanghai', 'Beijing', 'Tianjin', 'Shenzhen', 'Guangzhou', 'Chengdu', 'Dongguan', 'Chongqing'],
+            'USA' => ['New York City', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 'Philadelphia'],
+            'Pakistan' => ['Karachi', 'Lahore', 'Faisalabad', 'Peshawar']
+        ];
+    
         $faker = \Faker\Factory::create();
 
         //get all user ids except admin
@@ -23,9 +29,16 @@ class DownloadsTableSeeder extends Seeder
         $this->command->getOutput()->writeln("<info>Creating Downloads</info>");
         $bar = $this->command->getOutput()->createProgressBar($TotalDownloads);
 
-        factory(Download::class, $TotalDownloads)->make()->each(function ($dl) use (&$bar, &$faker, &$accesses) {
+        factory(Download::class, $TotalDownloads)->make()->each(function ($dl) use (&$bar, &$faker, &$accesses, &$SampleCities) {
+            $Countries = array_keys($SampleCities);
+            $RandomCountry = $Countries[array_rand($Countries)];
+            $CountryCities = $SampleCities[$RandomCountry];
+            $RandomCity =  $CountryCities[array_rand($CountryCities)];
+
             $dl->access_id = $faker->randomElement($accesses);
             $dl->ip = $faker->ipv4;
+            $dl->country = $RandomCountry;
+            $dl->city = $RandomCity;
             $dl->machine_name = strtoupper($faker->domainWord);
 
             //Download can only be created between "start" and "end" of the parent Access
@@ -36,10 +49,17 @@ class DownloadsTableSeeder extends Seeder
             //Create Upload entry for 90% of download entries
             if($faker->boolean(90))
             {
+                $Countries = array_keys($SampleCities);
+                $RandomCountry = $Countries[array_rand($Countries)];
+                $CountryCities = $SampleCities[$RandomCountry];
+                $RandomCity =  $CountryCities[array_rand($CountryCities)];
+
                 $ul = new Upload();
 
                 $ul->access_id = $dl->access_id;
                 $ul->ip = $dl->ip;
+                $ul->country = $RandomCountry;
+                $ul->city = $RandomCity;
                 $ul->machine_name = strtoupper($dl->machine_name);
 
                 //Upload can only be created AFTER download and BEFORE "end" of the parent Access

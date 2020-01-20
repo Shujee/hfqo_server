@@ -176,6 +176,23 @@ export default new Vuex.Store({
                     });
             }
         },
+
+        fetchExamNames(context) {
+            if (context.getters.loggedIn) {
+                return axios
+                    .get('exam_names')
+                    .then(response => {
+                        return response;
+                    })
+                    .catch(err => {
+                        if(err.response.status === 403) {
+                            alert('Could not fetch list of Master Files from the server.');
+                        }
+
+                        throw err;
+                    });
+            }
+        },
       
         fetchUsers(context) {
             return axios
@@ -280,6 +297,29 @@ export default new Vuex.Store({
                     throw err;
                 });
         },
+
+        fetchHFQReport(context, params) {
+            return axios
+                .post("hfqreport", params)
+                .then(response => {
+                    return response;
+                })
+                .catch((err) => {
+                    throw err;
+                });
+        },
+
+        fetchUploadLocations() {
+            return axios
+                .get("/upload/locations")
+                .then(response => {
+                    return response;
+                })
+                .catch((err) => {
+                    throw err;
+                });
+          },
+      
 
         updateAccesses(context, accesses) {
             if (context.getters.loggedIn) {

@@ -53,4 +53,15 @@ class UploadController extends Controller
     {
         //
     }
+
+    /**
+     * Returns unique locations (city/country) from the uploads table
+     *
+     * @param  \App\Upload  $upload
+     * @return \Illuminate\Http\Response
+     */
+    public function locations(Upload $upload)
+    {
+        return \App\Upload::groupBy('city', 'country')->select('city', 'country')->get();
+    }
 }

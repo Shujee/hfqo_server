@@ -34,6 +34,18 @@ class ExamPolicy
     }
 
     /**
+     * Determine whether the user can view the exam.
+     *
+     * @param  \App\User  $user
+     * @param  \App\Exam  $exam
+     * @return mixed
+     */
+    public function viewreport(User $user)
+    {
+        return $user->isAdmin();
+    }
+
+    /**
      * Determine whether the user can create exams.
      *
      * @param  \App\User  $user

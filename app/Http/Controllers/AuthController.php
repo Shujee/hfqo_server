@@ -39,12 +39,6 @@ class AuthController extends Controller
 
             $Token = json_decode($response->getBody()->getContents(), true);
 
-            $headers = [
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
-                'Authorization' => "Bearer {$Token['access_token']}"
-            ];
-
             return [
                     'token' => $Token,
             ];

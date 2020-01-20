@@ -54,7 +54,7 @@ export default {
           title: "HFQ Report",
           subtitle: "Generate high-frequency questions report",
           icon: "mdi-file-chart",
-          view: "report"
+          view: "hfqreport"
         }
       ],
       right: null

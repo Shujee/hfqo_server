@@ -26,12 +26,14 @@ Route::prefix('v1')->middleware('cors')->group(function()
         Route::post('/logout', 'AuthController@logout');
 
         Route::get('/exams', 'ExamController@index')->middleware('can:viewAny,App\Exam');
+        Route::get('/exam_names', 'ExamController@names')->middleware('can:viewAny,App\Exam');
         Route::post('/exam', 'ExamController@store')->middleware('can:create,App\Exam');
         Route::delete('/exam/{exam}', 'ExamController@destroy')->middleware('can:delete,exam');
         Route::put('/exam/{exam}', 'ExamController@update')->middleware('can:update,exam');
         Route::get('/exam/{exam}/accesses', 'ExamController@accesses')->middleware('can:viewAny,exam');
         Route::post('/exam/{exam}/update_files', 'ExamController@update_files')->middleware('can:update,exam');
         Route::post('/exam/{exam}/upload_result', 'ExamController@upload_result')->middleware('can:uploadResult,exam');
+        Route::post('/hfqreport', 'ExamController@hfqreport')->middleware('can:viewreport,App\Exam');
 
         Route::get('/users', 'UserController@index')->middleware('can:viewAny,App\User');
         Route::delete('/user/{user}', 'UserController@destroy')->middleware('can:delete,user');
@@ -48,5 +50,6 @@ Route::prefix('v1')->middleware('cors')->group(function()
         
         Route::get('/downloads', 'DownloadController@index')->middleware('can:viewAny,App\Download');
         Route::get('/uploads', 'UploadController@index')->middleware('can:viewAny,App\Upload');
+        Route::get('/upload/locations', 'UploadController@locations')->middleware('can:viewAny,App\Upload');
     });
 });
