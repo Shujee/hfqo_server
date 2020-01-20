@@ -85,8 +85,14 @@ class ExamController extends Controller
 
         $Exam->save();
 
-        //todo: fill QAs
-        //$exam->xml_file_name = $request['qas'];
+        $qas = json_decode($request['qas'], true);
+
+        //insert all result rows in UploadRow table
+        foreach ($qas as $qa) {
+            $Q = \App\QA::make($qa);
+            $Q['exam_id'] = $Exam->id;
+            $Q->save();
+        }
     }
 
     /**
@@ -136,7 +142,7 @@ class ExamController extends Controller
 
             //insert all result rows in UploadRow table
             foreach ($qas as $qa) {
-                $r['exam_id'] = $exam->id;
+                $qa['exam_id'] = $exam->id;
                 \App\QA::create($qa);    
             }
         } else {
@@ -212,11 +218,17 @@ class ExamController extends Controller
     }
 
     public function hfqreport(Request $request)
-    {
+    {       
         $Q = \App\UploadRow 
         ::join('uploads', 'uploadrows.upload_id', '=', 'uploads.id')
         ->join('accesses', 'uploads.access_id', '=', 'accesses.id')
-        ->join('exams', 'accesses.exam_id', '=', 'exams.id');
+        ->join('exams', 'accesses.exam_id', '=', 'exams.id')
+        ->join('qas', function($join) { 
+            $join->on('uploadrows.a1', '=', 'qas.index');
+            $join->on('qas.exam_id', '=', 'accesses.exam_id');
+        });
+
+        //$Q = $Q->where('exams.id', $request['exam_id']);
 
         if($request->filled('start')) {
             $Q = $Q->where('uploads.created_at', '>=', $request['start']);
@@ -231,10 +243,10 @@ class ExamController extends Controller
             $Q = $Q->where('uploads.country', $request['location']['country']);
         }
 
-        $Q = $Q->groupBy('exams.id', 'uploadrows.a1', 'uploadrows.a2', 'uploadrows.a3')
-            ->havingRaw('COUNT(*) > ?', [ $request['frequency'] ])
+        $Q = $Q->groupBy('uploadrows.a1', 'qas.question', 'qas.answer')
+            ->havingRaw('COUNT(*) >= ?', [ $request['frequency'] ])
             ->orderBy('freq', 'DESC')
-            ->selectRaw('exams.id as exam, uploadrows.a1, uploadrows.a2, uploadrows.a3, COUNT(*) as freq');
+            ->selectRaw('uploadrows.a1 as `index`, qas.question, qas.answer, COUNT(*) as freq');
 
         return $Q->get();
     }

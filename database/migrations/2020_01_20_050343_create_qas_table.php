@@ -17,11 +17,13 @@ class CreateQasTable extends Migration
             $table->bigIncrements('id');
             $table->bigInteger('exam_id')->unsigned();
             $table->integer('index');
-            $table->string('question');
-            $table->string('choices');
-            $table->string('answer');
+            $table->string('question', 7000);
+            $table->string('choices', 3000)->nullable();
+            $table->string('answer')->nullable();
 
             $table->foreign('exam_id')->references('id')->on('exams');
+
+            $table->index(['exam_id', 'index']);
         });
     }
 

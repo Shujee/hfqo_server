@@ -8,13 +8,15 @@
 
       <v-toolbar flat>
         <v-col cols="12" sm="4" md="2">
-          <v-select
-            :items="exams"
+          <v-autocomplete
             v-model="exam"
-            label="Master File"
+            :items="exams"
+            :loading="loadingExams"
             item-text="name"
             item-value="id"
-          ></v-select>
+            label="Master File"
+            prepend-inner-icon="mdi-file-outline"
+          ></v-autocomplete>
         </v-col>
         <v-col cols="6" sm="3" md="2">
           <v-menu
@@ -59,7 +61,13 @@
           </v-menu>
         </v-col>
         <v-col cols="12" sm="4" md="3">
-          <v-select :items="locations" v-model="location" label="Location"></v-select>
+           <v-autocomplete
+            v-model="location"
+            :items="locations"
+            :loading="loadingExams"
+            label="Location"
+            prepend-inner-icon="mdi-pin"
+          ></v-autocomplete>
         </v-col>
         <v-col cols="6" sm="3" md="2">
           <v-select :items="frequencies" v-model="frequency" label="Frequency">
@@ -76,15 +84,22 @@
             <v-icon>mdi-file</v-icon>
           </v-btn>
         </v-col>
-      </v-toolbar>     
+      </v-toolbar>
 
-      <HFQDataTable ref="HFQDT" :start="start" :end="end" :exam="exam" :location="location" :frequency="frequency" />
+      <HFQDataTable
+        ref="HFQDT"
+        :start="start"
+        :end="end"
+        :exam="exam"
+        :location="location"
+        :frequency="frequency"
+      />
     </v-card>
   </div>
 </template>
 
 <script>
-import HFQDataTable from '../components/HFQDataTable';
+import HFQDataTable from "../components/HFQDataTable";
 
 export default {
   components: {
@@ -99,14 +114,16 @@ export default {
       exam: null,
       location: null,
       frequency: null,
-      loading: false,   
+      loading: false,
+      loadingExams: false,
+      loadingLocations: false,
       frequencies: [
         { text: "3 or more", value: 3 },
         { text: "2 or more", value: 2 },
         { text: "1 or more", value: 1 }
       ],
       locations: [],
-      exams: [],
+      exams: []
     };
   },
 
@@ -123,12 +140,11 @@ export default {
   },
 
   mounted() {
-    this.loading = true;
+    this.loadingLocations = true;
     this.$store
       .dispatch("fetchUploadLocations")
       .then(response => {
-        this.loading = false;
-
+        this.loadingLocations = false;
         this.locations = response.data.map(x => {
           return {
             text: x.city + ", " + x.country,
@@ -136,15 +152,16 @@ export default {
           };
         });
       })
-      .catch(() => (this.loading = false));
+      .catch(() => (this.loadingLocations = false));
 
+    this.loadingExams = true;
     this.$store
       .dispatch("fetchExamNames")
       .then(response => {
-        this.loading = false;
+        this.loadingExams = false;
         this.exams = response.data;
       })
-      .catch(() => (this.loading = false));
+      .catch(() => (this.loadingExams = false));
   }
 };
 </script>

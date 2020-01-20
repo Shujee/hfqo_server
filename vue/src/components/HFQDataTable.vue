@@ -9,9 +9,9 @@
     :search="search"
     :readonly="true"
     :footer-props="{
-          'items-per-page-options': [10,25,50]
-        }"
-    :sort-by="['freq']"
+      'items-per-page-options': [10,25,50]
+    }"
+    :sort-by="['freq', 'a1']"
     :sort-desc="[true]"
   >
     <template v-slot:item.freq="{ item }">
@@ -35,8 +35,9 @@ export default {
       loading: false,
       search: "",
       headers: [
-        { text: "Index", value: "a1", sortable: false },
+        { text: "Index", value: "index", sortable: false },
         { text: "Question", value: "question", sortable: false },
+        { text: "Answer", value: "answer", sortable: false },
         { text: "Frequency", value: "freq", sortable: false }
       ],
       items: []
