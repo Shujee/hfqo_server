@@ -228,7 +228,7 @@ class ExamController extends Controller
             $join->on('qas.exam_id', '=', 'accesses.exam_id');
         });
 
-        $Q = $Q->where('exams.id', $request['exam_id']);
+        $Q = $Q->where('exams.id', $request['exam']);
 
         if($request->filled('start')) {
             $Q = $Q->where('uploads.created_at', '>=', $request['start']);
