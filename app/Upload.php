@@ -10,4 +10,14 @@ class Upload extends Model
     {
         return $this->belongsTo('App\Access');
     }
+
+    public function User()
+    {
+        return $this->Access->User;
+    }
+
+    public function Exam()
+    {
+        return $this->Access->Exam;
+    }
 }
