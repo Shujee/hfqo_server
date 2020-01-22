@@ -51,5 +51,6 @@ Route::prefix('v1')->middleware('cors')->group(function()
         Route::get('/downloads', 'DownloadController@index')->middleware('can:viewAny,App\Download');
         Route::get('/uploads', 'UploadController@index')->middleware('can:viewAny,App\Upload');
         Route::get('/upload/locations', 'UploadController@locations')->middleware('can:viewAny,App\Upload');
+        Route::get('/upload/dates/{exam}', 'UploadController@dates')->middleware('can:viewAny,App\Upload');
     });
 });

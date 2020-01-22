@@ -60,8 +60,27 @@ class UploadController extends Controller
      * @param  \App\Upload  $upload
      * @return \Illuminate\Http\Response
      */
-    public function locations(Upload $upload)
+    public function locations()
     {
         return \App\Upload::groupBy('city', 'country')->select('city', 'country')->get();
+    }
+
+    /**
+     * Returns unique dates on which uploads were created during the specified period
+     *
+     * @param  \App\Upload  $upload
+     * @return \Illuminate\Http\Response
+     */
+    public function dates(Request $request, Exam $exam)
+    {
+        $Q = \App\Upload::
+            join('accesses', 'uploads.access_id', '=', 'accesses.id')->
+            join('exams', 'accesses.exam_id', '=', 'exams.id')->
+            where('exams.id', $exam->id)->
+            groupBy(['uploads.created_at'])->
+            selectRaw('DATE(uploads.created_at) as Date')->
+            pluck('Date');
+
+        return $Q;
     }
 }

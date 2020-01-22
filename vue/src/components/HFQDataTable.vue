@@ -59,7 +59,10 @@ export default {
           this.loading = false;
           this.items = response.data;
         })
-        .catch(() => (this.loading = false));
+        .catch((err) => {
+          this.loading = false;
+          this.$root.$confirm.openErr(err);
+        });
     },
 
     frequencyColor(freq) {

@@ -193,6 +193,24 @@ export default new Vuex.Store({
                     });
             }
         },
+
+        fetchUploadDates(context, exam) {
+            if (context.getters.loggedIn) {
+                console.log(exam);
+                return axios
+                    .get('upload/dates/' + exam)
+                    .then(response => {
+                        return response;
+                    })
+                    .catch(err => {
+                        if(err.response.status === 403) {
+                            alert('Could not fetch list of Master Files from the server.');
+                        }
+
+                        throw err;
+                    });
+            }
+        },
       
         fetchUsers(context) {
             return axios

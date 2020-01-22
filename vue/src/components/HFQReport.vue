@@ -16,6 +16,7 @@
             item-value="id"
             label="Master File"
             prepend-inner-icon="mdi-file-outline"
+            @change="fetchUploadDates"
           ></v-autocomplete>
         </v-col>
         <v-col cols="6" sm="3" md="2">
@@ -32,11 +33,12 @@
                 v-model="start"
                 label="Start Date"
                 prepend-inner-icon="mdi-calendar"
+                clearable
                 readonly
                 v-on="on"
               ></v-text-field>
             </template>
-            <v-date-picker v-model="start" @input="menu = false"></v-date-picker>
+            <v-date-picker v-model="start" @input="menu = false" :events="upload_dates" event-color="red lighten-1"></v-date-picker>
           </v-menu>
         </v-col>
         <v-col cols="6" sm="3" md="2">
@@ -53,15 +55,17 @@
                 v-model="end"
                 label="End Date"
                 prepend-inner-icon="mdi-calendar"
+                clearable
                 readonly
                 v-on="on"
               ></v-text-field>
             </template>
-            <v-date-picker v-model="end" @input="menu2 = false"></v-date-picker>
+            <v-date-picker v-model="end" @input="menu2 = false" :events="upload_dates" event-color="red lighten-1"></v-date-picker>
           </v-menu>
         </v-col>
         <v-col cols="12" sm="4" md="3">
            <v-autocomplete
+            clearable
             v-model="location"
             :items="locations"
             :loading="loadingExams"
@@ -114,13 +118,14 @@ export default {
       exam: null,
       location: null,
       frequency: null,
+      upload_dates: [],
       loading: false,
       loadingExams: false,
       loadingLocations: false,
       frequencies: [
-        { text: "3 or more", value: 3 },
-        { text: "2 or more", value: 2 },
-        { text: "1 or more", value: 1 }
+        { text: "3 or more times", value: 3 },
+        { text: "2 times", value: 2 },
+        { text: "1 time", value: 1 }
       ],
       locations: [],
       exams: []
@@ -136,6 +141,15 @@ export default {
 
     refreshTable() {
       this.$refs.HFQDT.fetchReport();
+    },
+
+    fetchUploadDates() {
+      this.$store
+        .dispatch("fetchUploadDates", this.exam)
+        .then(response => {
+          this.upload_dates = response.data;
+        })
+        .catch((err) => this.$root.$confirm.openErr(err));
     }
   },
 

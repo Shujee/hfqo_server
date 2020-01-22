@@ -219,6 +219,21 @@ class ExamController extends Controller
 
     public function hfqreport(Request $request)
     {       
+        $request->validate([
+            'exam' => 'required|exists:exams,id',
+            'start' => 'nullable|date',
+            'end' => 'nullable|date',
+            'frequency' => 'required|in:1,2,3'
+        ],
+        [
+            'exam.required' => 'Master File must be selected.',
+            'exam.exists' => 'Selected Master File does not exist on the server.',
+            'start.date' => 'Start Date format is not correct.',
+            'end.date' => 'End Date format is not correct.',
+            'frequency.required' => 'Select a Frequency value from the dropdown.',
+            'frequency.in' => 'Frequency value must be 1, 2 or 3.',
+        ]);
+
         $Q = \App\UploadRow 
         ::join('uploads', 'uploadrows.upload_id', '=', 'uploads.id')
         ->join('accesses', 'uploads.access_id', '=', 'accesses.id')
@@ -227,7 +242,7 @@ class ExamController extends Controller
             $join->on('uploadrows.a1', '=', 'qas.index');
             $join->on('qas.exam_id', '=', 'accesses.exam_id');
         });
-
+ 
         $Q = $Q->where('exams.id', $request['exam']);
 
         if($request->filled('start')) {
@@ -243,10 +258,19 @@ class ExamController extends Controller
             $Q = $Q->where('uploads.country', $request['location']['country']);
         }
 
-        $Q = $Q->groupBy('uploadrows.a1', 'qas.question', 'qas.answer')
-            ->havingRaw('COUNT(*) >= ?', [ $request['frequency'] ])
-            ->orderBy('freq', 'DESC')
-            ->selectRaw('uploadrows.a1 as `index`, qas.question, qas.answer, COUNT(*) as freq');
+        $Q = $Q->groupBy('uploadrows.a1', 'qas.question', 'qas.answer');
+
+        if($request->filled('frequency'))
+        {
+            //For 3, we'll return everything >= 3. For 1 or 2, we'll perform exact match only.
+            if($request['frequency'] == 3)
+                $Q = $Q->havingRaw('COUNT(*) >= ?', [ $request['frequency'] ]);
+            else
+                $Q = $Q->havingRaw('COUNT(*) = ?', [ $request['frequency'] ]);
+        }
+
+        $Q = $Q->orderBy('freq', 'DESC')
+                ->selectRaw('uploadrows.a1 as `index`, qas.question, qas.answer, COUNT(*) as freq');
 
         return $Q->get();
     }
