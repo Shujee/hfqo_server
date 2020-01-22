@@ -43,6 +43,10 @@
         <span class="pl-4">{{ item.machine_name }}</span>
       </template>
 
+      <template v-slot:item.city="{ item }">
+        <span>{{ item.city }}, {{ item.country }}</span>
+      </template>
+
       <template v-slot:item.ip="{ item }">
         <span class="text-mono">{{ item.ip }}</span>
       </template>
@@ -77,6 +81,7 @@ export default {
           sortable: false,
           class: "text-mono"
         },
+        { text: "Location", value: "city", sortable: false },
         { text: "Machine Name", value: "machine_name", sortable: false },
         {
           text: "Uploaded",

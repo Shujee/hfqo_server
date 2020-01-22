@@ -47,6 +47,10 @@
         <span class="text-mono">{{ item.ip }}</span>
       </template>
 
+      <template v-slot:item.city="{ item }">
+        <span>{{ item.city }}, {{ item.country }}</span>
+      </template>
+
       <template v-slot:item.created_at="{ item }">
         <v-layout justify-center>
           <v-chip success outlined ml-3>
@@ -77,6 +81,7 @@ export default {
           sortable: false,
           class: "text-mono"
         },
+        { text: "Location", value: "city", sortable: false },
         { text: "Machine Name", value: "machine_name", sortable: false },
         {
           text: "Downloaded",
