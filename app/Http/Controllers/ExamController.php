@@ -223,7 +223,7 @@ class ExamController extends Controller
             'exam' => 'required|exists:exams,id',
             'start' => 'nullable|date',
             'end' => 'nullable|date',
-            'frequency' => 'required|in:1,2,3'
+            'frequency' => 'required|in:0,1,2,3'
         ],
         [
             'exam.required' => 'Master File must be selected.',
@@ -231,7 +231,7 @@ class ExamController extends Controller
             'start.date' => 'Start Date format is not correct.',
             'end.date' => 'End Date format is not correct.',
             'frequency.required' => 'Select a Frequency value from the dropdown.',
-            'frequency.in' => 'Frequency value must be 1, 2 or 3.',
+            'frequency.in' => 'Frequency value must be 0, 1, 2 or 3.',
         ]);
 
         $Q = \App\UploadRow 
@@ -260,7 +260,7 @@ class ExamController extends Controller
 
         $Q = $Q->groupBy('uploadrows.a1', 'qas.question', 'qas.answer');
 
-        if($request->filled('frequency'))
+        if($request->filled('frequency') && $request['frequency'] !== 0)
         {
             //For 3, we'll return everything >= 3. For 1 or 2, we'll perform exact match only.
             if($request['frequency'] == 3)

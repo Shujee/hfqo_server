@@ -38,7 +38,12 @@
                 v-on="on"
               ></v-text-field>
             </template>
-            <v-date-picker v-model="start" @input="menu = false" :events="upload_dates" event-color="red lighten-1"></v-date-picker>
+            <v-date-picker
+              v-model="start"
+              @input="menu = false"
+              :events="upload_dates"
+              event-color="red lighten-1"
+            ></v-date-picker>
           </v-menu>
         </v-col>
         <v-col cols="6" sm="3" md="2">
@@ -60,11 +65,16 @@
                 v-on="on"
               ></v-text-field>
             </template>
-            <v-date-picker v-model="end" @input="menu2 = false" :events="upload_dates" event-color="red lighten-1"></v-date-picker>
+            <v-date-picker
+              v-model="end"
+              @input="menu2 = false"
+              :events="upload_dates"
+              event-color="red lighten-1"
+            ></v-date-picker>
           </v-menu>
         </v-col>
         <v-col cols="12" sm="4" md="3">
-           <v-autocomplete
+          <v-autocomplete
             clearable
             v-model="location"
             :items="locations"
@@ -76,10 +86,13 @@
         <v-col cols="6" sm="3" md="2">
           <v-select :items="frequencies" v-model="frequency" label="Frequency">
             <template v-slot:item="data">
-              <v-chip :color="frequencyColor(data.item.value)" text-color="white">{{data.item.text}}</v-chip>
+              <v-chip :color="frequencyColor(data.item.value)" text-color="white" class="mr-4 px-2 py-0">
+                <v-icon>mdi-chevron-right</v-icon>
+              </v-chip>
+              {{data.item.text}}
             </template>
             <template v-slot:selection="data">
-              <v-chip :color="frequencyColor(data.item.value)" text-color="white">{{data.item.text}}</v-chip>
+              {{data.item.text}}
             </template>
           </v-select>
         </v-col>
@@ -125,7 +138,8 @@ export default {
       frequencies: [
         { text: "3 or more times", value: 3 },
         { text: "2 times", value: 2 },
-        { text: "1 time", value: 1 }
+        { text: "1 time", value: 1 },
+        { text: "All", value: 0 }
       ],
       locations: [],
       exams: []
@@ -136,7 +150,8 @@ export default {
     frequencyColor(freq) {
       if (freq > 2) return "green";
       else if (freq > 1) return "orange";
-      else return "red";
+      else if (freq > 0) return "red";
+      else return "black";
     },
 
     refreshTable() {
@@ -149,7 +164,7 @@ export default {
         .then(response => {
           this.upload_dates = response.data;
         })
-        .catch((err) => this.$root.$confirm.openErr(err));
+        .catch(err => this.$root.$confirm.openErr(err));
     }
   },
 
