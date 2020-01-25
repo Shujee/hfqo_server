@@ -16,6 +16,6 @@ class SlackAgent
      */
     public function routeNotificationForSlack($notification)
     {
-        return 'https://hooks.slack.com/services/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';
+        return 'https://hooks.slack.com/services/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';
     }
 }

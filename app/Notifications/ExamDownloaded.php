@@ -2,25 +2,27 @@
 
 namespace App\Notifications;
 
+use App\Download;
+use App\Exam;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\SlackMessage;
 
-class AdminLogin extends Notification
+class ExamDownloaded extends Notification
 {
     use Queueable;
 
-    private $IP;
+    private $DL;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($ip)
+    public function __construct(Download $dl)
     {
-        $this->IP = $ip;
+        $this->DL = $dl;
     }
 
     /**
@@ -43,19 +45,11 @@ class AdminLogin extends Notification
     public function toSlack($notifiable)
     {
         return (new SlackMessage)
-                ->content('Admin logged from the following IP: ' . $this->IP);
-    }
-
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function toArray($notifiable)
-    {
-        return [
-            //
-        ];
+            ->content(
+                "Master file downloaded:
+                    Name: {$this->DL->Exam->name}
+                    User: {$this->DL->User->name}
+                    IP: {$this->DL->ip}
+                    Location: {$this->DL->city}, {$this->DL->country}");
     }
 }

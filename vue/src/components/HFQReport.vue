@@ -19,7 +19,7 @@
             @change="fetchUploadDates"
           ></v-autocomplete>
         </v-col>
-        <v-col cols="6" sm="3" md="2">
+        <v-col cols="6" sm="4" md="2">
           <v-menu
             v-model="menu"
             :close-on-content-click="false"
@@ -46,7 +46,7 @@
             ></v-date-picker>
           </v-menu>
         </v-col>
-        <v-col cols="6" sm="3" md="2">
+        <v-col cols="6" sm="4" md="2">
           <v-menu
             v-model="menu2"
             :close-on-content-click="false"
@@ -73,7 +73,7 @@
             ></v-date-picker>
           </v-menu>
         </v-col>
-        <v-col cols="12" sm="4" md="3">
+        <v-col cols="12" sm="4" md="2">
           <v-autocomplete
             clearable
             v-model="location"
@@ -83,22 +83,27 @@
             prepend-inner-icon="mdi-pin"
           ></v-autocomplete>
         </v-col>
-        <v-col cols="6" sm="3" md="2">
+        <v-col cols="6" sm="4" md="2">
           <v-select :items="frequencies" v-model="frequency" label="Frequency">
             <template v-slot:item="data">
-              <v-chip :color="frequencyColor(data.item.value)" text-color="white" class="mr-4 px-2 py-0">
+              <v-chip
+                :color="frequencyColor(data.item.value)"
+                text-color="white"
+                class="mr-4 px-2 py-0"
+              >
                 <v-icon>mdi-chevron-right</v-icon>
               </v-chip>
               {{data.item.text}}
             </template>
-            <template v-slot:selection="data">
-              {{data.item.text}}
-            </template>
+            <template v-slot:selection="data">{{data.item.text}}</template>
           </v-select>
         </v-col>
-        <v-col align="end">
-          <v-btn color="primary" @click="refreshTable" fab>
-            <v-icon>mdi-file</v-icon>
+        <v-col cols="6" sm="2" md="2" align="end">
+          <v-btn color="primary" class="mr-2" @click="refreshTable" fab>
+            <v-icon>mdi-refresh</v-icon>
+          </v-btn>
+          <v-btn color="primary" :loading="loadingDownload" @click="refreshAndDownloadTable" fab>
+            <v-icon>mdi-file-download</v-icon>
           </v-btn>
         </v-col>
       </v-toolbar>
@@ -135,6 +140,7 @@ export default {
       loading: false,
       loadingExams: false,
       loadingLocations: false,
+      loadingDownload: false,
       frequencies: [
         { text: "3 or more times", value: 3 },
         { text: "2 times", value: 2 },
@@ -156,6 +162,33 @@ export default {
 
     refreshTable() {
       this.$refs.HFQDT.fetchReport();
+    },
+
+    refreshAndDownloadTable() {
+      this.$refs.HFQDT.fetchReport();
+
+      this.loadingDownload = true;
+      this.$store
+        .dispatch("downloadHFQReport", {
+          exam: this.exam,
+          start: this.start,
+          end: this.end,
+          location: this.location,
+          frequency: this.frequency
+        })
+        .then(response => {
+          this.loadingDownload = false;
+
+          let blob = new Blob([response.data], { type: "text/csv" });
+          let link = document.createElement("a");
+          link.href = window.URL.createObjectURL(blob);
+          link.download = "hfqreport.csv";
+          link.click();
+        })
+        .catch(err => {
+          this.loadingDownload = false;
+          this.$root.$confirm.openErr(err);
+        });
     },
 
     fetchUploadDates() {

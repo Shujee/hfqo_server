@@ -326,6 +326,17 @@ export default new Vuex.Store({
                     throw err;
                 });
         },
+        
+        downloadHFQReport(context, params) {
+            return axios
+                .post("hfqreportpdf", params)
+                .then(response => {
+                    return response;
+                })
+                .catch((err) => {
+                    throw err;
+                });
+        },
 
         fetchUploadLocations() {
             return axios

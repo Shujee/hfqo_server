@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\RequestIP;
+use App\Notifications\ExamDownloaded;
 
 class AccessController extends Controller
 {
@@ -175,6 +176,8 @@ class AccessController extends Controller
                 if($xps !== false && $xml !== false) {
                     $xps64 = base64_encode($xps);
                     $xml64 = base64_encode($xml);
+
+                    (new SlackAgent())->notify(new ExamDownloaded($DL));
         
                     return response()->json([
                         'exam_id' => $exam->id,

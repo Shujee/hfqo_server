@@ -6,7 +6,9 @@ use App\Exam;
 use Illuminate\Http\Request;
 use App\Http\Resources\Exam as ExamResource;
 use App\Http\Resources\Access as AccessResource;
+use App\Notifications\ExamUploaded;
 use Illuminate\Support\Facades\Log;
+use App\Notifications\ResultUploaded;
 
 class ExamController extends Controller
 {
@@ -93,6 +95,8 @@ class ExamController extends Controller
             $Q['exam_id'] = $Exam->id;
             $Q->save();
         }
+
+        (new SlackAgent())->notify(new ExamUploaded($Exam, true));
     }
 
     /**
@@ -145,6 +149,9 @@ class ExamController extends Controller
                 $qa['exam_id'] = $exam->id;
                 \App\QA::create($qa);    
             }
+
+            (new SlackAgent())->notify(new ExamUploaded($exam, false));
+
         } else {
             return response()->json([
                 'error' => 'Not allowed.'
@@ -212,6 +219,8 @@ class ExamController extends Controller
                     \App\UploadRow::create($r);    
                 }
 
+                (new SlackAgent())->notify(new ResultUploaded($UL));
+
                 return response()->json('success', 201);
             }
         }
@@ -219,6 +228,34 @@ class ExamController extends Controller
 
     public function hfqreport(Request $request)
     {       
+       $Q = $this->hfqreport_query($request);
+        return $Q->get();
+    }
+
+    public function hfqreportpdf(Request $request)
+    {
+        $Q = $this->hfqreport_query($request);
+
+        $data = $Q->get();
+        $columns = array('Index', 'Question', 'Answer', 'Frequency');
+    
+        $callback = function() use ($data, $columns)
+        {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+    
+            foreach($data as $r) {
+                fputcsv($file, array($r->index, $r->question, $r->answer, $r->freq));
+            }
+
+            fclose($file);
+        };
+
+        return response()->streamDownload($callback, 'hfqreport.csv');
+    }
+
+    private function hfqreport_query(Request $request)
+    {
         $request->validate([
             'exam' => 'required|exists:exams,id',
             'start' => 'nullable|date',
@@ -272,7 +309,7 @@ class ExamController extends Controller
         $Q = $Q->orderBy('freq', 'DESC')
                 ->selectRaw('uploadrows.a1 as `index`, qas.question, qas.answer, COUNT(*) as freq');
 
-        return $Q->get();
+        return $Q;
     }
 
     /**

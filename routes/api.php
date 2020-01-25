@@ -34,6 +34,7 @@ Route::prefix('v1')->middleware('cors')->group(function()
         Route::post('/exam/{exam}/update_files', 'ExamController@update_files')->middleware('can:update,exam');
         Route::post('/exam/{exam}/upload_result', 'ExamController@upload_result')->middleware('can:uploadResult,exam');
         Route::post('/hfqreport', 'ExamController@hfqreport')->middleware('can:viewreport,App\Exam');
+        Route::post('/hfqreportpdf', 'ExamController@hfqreportpdf')->middleware('can:viewreport,App\Exam');
 
         Route::get('/users', 'UserController@index')->middleware('can:viewAny,App\User');
         Route::delete('/user/{user}', 'UserController@destroy')->middleware('can:delete,user');

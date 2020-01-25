@@ -13,11 +13,11 @@ class Upload extends Model
 
     public function User()
     {
-        return $this->Access->User;
+        return $this->Access->User();
     }
 
     public function Exam()
     {
-        return $this->Access->Exam;
+        return $this->Access->Exam();
     }
 }

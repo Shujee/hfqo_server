@@ -13,13 +13,11 @@ class Download extends Model
 
     public function Exam()
     {
-        $Acc = Access::find($this->access_id);
-        return Exam::withTrashed()->find($Acc->exam_id);
+        return $this->Access->Exam();
     }
 
     public function User()
     {
-        $Acc = Access::find($this->access_id);
-        return User::withTrashed()->find($Acc->user_id);
+        return $this->Access->User();
     }
 }

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Exception;
-use \App\Notifications\AdminLogin;
+use App\Notifications\UserLogin;
 
 class AuthController extends Controller
 {
@@ -39,7 +39,7 @@ class AuthController extends Controller
 
             $Token = json_decode($response->getBody()->getContents(), true);
             
-            (new SlackAgent())->notify(new AdminLogin($request->getIp()));
+            (new SlackAgent())->notify(new UserLogin($request->getIp()));
 
             return [
                     'token' => $Token,
