@@ -16,6 +16,7 @@ class Exam extends JsonResource
     {
         return [
             'id' => $this->id,
+            'number' => $this->number,
             'name' => $this->name,
             'xps_file_name' => $this->xps_file_name,
             'xml_file_name' => $this->xml_file_name,
@@ -23,6 +24,7 @@ class Exam extends JsonResource
             'is_expired' => $this->is_expired,
             'updated_at' => $this->updated_at,
             'age' => $this->updated_at->diffForHumans(),
+            'remarks' => $this->Uploader->remarks,
             'uploader' => $this->Uploader->name
         ];
     }

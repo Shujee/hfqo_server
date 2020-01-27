@@ -15,7 +15,7 @@ class Exam extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'is_expired',
+        'number', 'name', 'is_expired', 'remarks',
     ];
 
     public function scopeNotExpired($query)

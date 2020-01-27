@@ -107,13 +107,7 @@ class ExamController extends Controller
      */
     public function update_files(Request $request, Exam $exam)
     {
-        if (!$request->user()->isUploader()) {
-            Log::alert("{$request->user()->name} (id={$request->user()->id}) tried to update {$exam->name} (id={$exam->id}).");
-
-            return response()->json([
-                'error' => 'Not allowed.'
-            ], 403);
-        } else if ($exam->is_expired) {
+        if ($exam->is_expired) {
             return response()->json([
                 'error' => 'Specified master file has expired.'
             ], 403);
