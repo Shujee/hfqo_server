@@ -28,6 +28,9 @@
     1. php artisan passport:install
     2. Now copy Password grant client secret to .ENV file.
 11. Copy local Illuminate/Http/Request.php to the server. Local version has a modified version of getIp() function.
+12. Run commands (installs Laravel IDE Helper package that can generate PHPDocs for models, which helps in auto-completion): 
+    composer require --dev barryvdh/laravel-ide-helper
+    php artisan ide-helper:models --dir='app'
 
 ===========================================================================================================================================================================
 SSH connection to hfqserver production server

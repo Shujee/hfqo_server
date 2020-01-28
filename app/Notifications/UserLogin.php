@@ -12,15 +12,17 @@ class UserLogin extends Notification
     use Queueable;
 
     private $IP;
+    private $UserName;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($ip)
+    public function __construct($username, $ip)
     {
         $this->IP = $ip;
+        $this->UserName = $username;
     }
 
     /**
@@ -37,6 +39,6 @@ class UserLogin extends Notification
     public function toSlack($notifiable)
     {
         return (new SlackMessage)
-                ->content('User logged from the following IP: ' . $this->IP);
+                ->content("User '{$this->UserName}' logged from the following IP: {$this->IP}");
     }
 }

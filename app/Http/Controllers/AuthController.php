@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Exception;
 use App\Notifications\UserLogin;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -36,10 +37,14 @@ class AuthController extends Controller
                 ]
             ]);
 
-
             $Token = json_decode($response->getBody()->getContents(), true);
-            
-            (new SlackAgent())->notify(new UserLogin($request->getIp()));
+
+            $credentials = $request->only('email', 'password');
+            if(Auth::once($credentials)) {
+                $U = Auth::getUser();
+                $IP = $request->getIp();
+                (new SlackAgent())->notify(new UserLogin($U->name, $IP));
+            }
 
             return [
                     'token' => $Token,

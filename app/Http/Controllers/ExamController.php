@@ -25,9 +25,15 @@ class ExamController extends Controller
         return ExamResource::collection($Exams);
     }
 
-    public function names()
+    public function names() : array
     {
-        return \App\Exam::select('name', 'id')->get();
+        return \App\Exam::selectRaw("name + ' (' + number + ')' as name, id")->get();
+    }
+
+    public function number_exists($number) 
+    {
+        $Exists = \App\Exam::where('number', $number)->exists();
+        return $Exists? "true" : "false";
     }
 
     /**
@@ -58,19 +64,23 @@ class ExamController extends Controller
 
         $request->validate(
             [
-                'name' => 'required|unique:exams',
+                'number' => 'required|unique:exams',
+                'name' => 'required',
                 'qa_count' => 'required',
                 'xps_content' => 'file',
                 'xml_content' => 'file',
                 'qas' => 'required',
+                'origfilename' => 'required',
             ],
             [
-                'name.required' => 'Name of the master file must be supplied.',
-                'name.unique' => 'A master file with this name already exists on the server.',
+                'number.required' => 'Exam number must be supplied.',
+                'number.unique' => 'A master file with this number already exists on the server.',
+                'name.required' => 'Exam name must be supplied.',
                 'qa_count.required' => 'qa_count is required',
                 'xps_content.file' => 'XPS flie must be supplied',
                 'xml_content.file' => 'XML flie must be supplied',
                 'qas.required' => 'QAs must be supplied',
+                'origfilename.required' => 'Original File Name must be supplied',
             ]
         );
 
@@ -79,8 +89,11 @@ class ExamController extends Controller
         $Exam->uploader_id = $request->user()->id;
 
         $Exam->is_expired = false;
+        $Exam->number = $request['number'];
         $Exam->name = $request['name'];
         $Exam->qa_count = $request['qa_count'];
+        $Exam->remarks = 'NEW';
+        $Exam->origfilename = $request['origfilename'];
 
         $Exam->xps_file_name = $request->file('xps_content')->store('xps');
         $Exam->xml_file_name = $request->file('xml_content')->store('xml');
@@ -97,6 +110,8 @@ class ExamController extends Controller
         }
 
         (new SlackAgent())->notify(new ExamUploaded($Exam, true));
+
+        return $Exam;
     }
 
     /**
@@ -119,17 +134,23 @@ class ExamController extends Controller
                 'xps_content' => 'file',
                 'xml_content' => 'file',
                 'qas' => 'required',
+                'remarks' => 'required',
+                'origfilename' => 'required',
             ],
             [
                 'qa_count.required' => 'qa_count is required',
+                'remarks.required' => 'remarks field is required',
                 'xps_content.file' => 'XPS flie must be supplied',
                 'xml_content.file' => 'XML flie must be supplied',
                 'qas.required' => 'QAs must be supplied',
+                'origfilename.required' => 'Original File Name must be supplied',
             ]
         );
 
         if ($exam->uploader_id == $request->user()->id) {
             $exam->qa_count = $request['qa_count'];
+            $exam->remarks = $request['remarks'];
+            $exam->origfilename = $request['origfilename'];
 
             $exam->xps_file_name = $request->file('xps_content')->store('xps');
             $exam->xml_file_name = $request->file('xml_content')->store('xml');
@@ -145,6 +166,8 @@ class ExamController extends Controller
             }
 
             (new SlackAgent())->notify(new ExamUploaded($exam, false));
+
+            return "true";
 
         } else {
             return response()->json([

@@ -30,5 +30,5 @@ class QA extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['question', 'answer', 'choices', 'index', 'upload_id'];
+    protected $fillable = ['question', 'answer', 'choices', 'index', 'exam_id'];
 }

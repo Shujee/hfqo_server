@@ -180,7 +180,7 @@ class AccessController extends Controller
                     (new SlackAgent())->notify(new ExamDownloaded($DL));
         
                     return response()->json([
-                        'exam_id' => $exam->id,
+                        'id' => $exam->id,
                         'xps'=> $xps64,
                         'xml'=> $xml64
                     ]);    

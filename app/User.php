@@ -114,7 +114,7 @@ class User extends Authenticatable
     public function MyExamsUL()
     {
         return Exam::where('is_expired', false)->
-                        where('uploader_id', $this->id)->
-                        pluck('name', 'id');;
+                    where('uploader_id', $this->id)->
+                    select(['id', 'number', 'name', 'qa_count', 'origfilename', 'remarks', 'updated_at'])->get();
     }
 }
