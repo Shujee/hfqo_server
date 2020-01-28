@@ -25,9 +25,9 @@ class ExamController extends Controller
         return ExamResource::collection($Exams);
     }
 
-    public function names() : array
+    public function names()
     {
-        return \App\Exam::selectRaw("name + ' (' + number + ')' as name, id")->get();
+        return \App\Exam::selectRaw("CONCAT(`number`, ' (', `name`, ')') as name, id")->get();
     }
 
     public function number_exists($number) 
