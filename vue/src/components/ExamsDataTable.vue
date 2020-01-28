@@ -28,12 +28,12 @@
       :sort-by="['updated_at']"
       :sort-desc="[true]"
     >
-      <template v-slot:item.name="{ item }">
+      <template v-slot:item.number="{ item }">
         <div class="ellipsis">
         <v-avatar size="32">
           <v-icon>mdi-file-document</v-icon>
         </v-avatar>
-        <span class="pl-4 ellipsis">{{ item.name }}</span>
+        <span class="pl-4 ellipsis">{{ item.number }}</span>
         </div>
       </template>
    
@@ -99,6 +99,11 @@ export default {
       show_permissions: false,
       search: "",
       headers: [
+        { 
+          text: "Number", 
+          value: "number", 
+          sortable: false 
+        },
         { 
           text: "Name", 
           value: "name", 
