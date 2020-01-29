@@ -122,6 +122,39 @@ class APITests extends TestCase
         }
     }
 
+    
+    /**
+     * Upload a new exam.
+     *
+     * @return void
+     */
+    public function testDownloadExam()
+    {
+        //Test Uploader user
+        $user = \App\User::where('email', 'down@hfqserver.com')->first();
+
+        $params = [
+            'machine_name' => 'SHUJAAT-PC',
+        ];
+
+        //get this user's accesses
+        $Acc = $user->Accesses()->first();
+
+        $response = $this->actingAs($user, 'api')->withHeaders([
+            'Accept' => 'application/json',
+        ])->post("/api/v1/access/{$Acc->id}/download", $params);
+
+        $data = $response->getContent()
+        ;
+        $res = json_decode($data, true);
+
+        if(array_key_exists('exception', $res))
+            fwrite(STDERR, $res['message']);
+        else {
+            $response->assertStatus(200);
+        }
+    }
+
     public function testExamNumberExists()
     {
         //Test Uploader user

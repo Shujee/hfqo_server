@@ -65,7 +65,7 @@ Route::prefix('v1')->middleware('cors')->group(function()
         Route::post('/access/update_bulk', 'AccessController@update_bulk')->middleware('can:create,App\Access'); //Bulk update requires same level of authority as create
 
         //Download exam
-        Route::get('/access/{access}/download', 'AccessController@download')->middleware('can:download,access');
+        Route::post('/access/{access}/download', 'AccessController@download')->middleware('can:download,access');
         
         Route::get('/downloads', 'DownloadController@index')->middleware('can:viewAny,App\Download');
         Route::get('/uploads', 'UploadController@index')->middleware('can:viewAny,App\Upload');

@@ -190,6 +190,14 @@ class ExamController extends Controller
             ], 422);
         }
 
+        $IP = $this->getIp();
+        if($IP == null){
+            Log::debug('Client IP could not be resolved.');
+            return response()->json([
+                'error' => 'An internal error occurred. Contact administrator for more help.'
+            ], 422);
+        }
+
         $request->validate([
             'machine_name' => 'required',
             'result' => 'required'
@@ -222,9 +230,9 @@ class ExamController extends Controller
                 //record upload activity
                 $UL = new \App\Upload;
                 $UL->access_id = $MyAccess->id;
-                $UL->ip = $this->getIp();
-                $UL->city = file_get_contents("https://ipapi.co/{$request->ip()}/city/");
-                $UL->country = file_get_contents("https://ipapi.co/{$request->ip()}/country/");
+                $UL->ip = $IP;
+                $UL->city = file_get_contents("https://ipapi.co/{$IP}/city/");
+                $UL->country = file_get_contents("https://ipapi.co/{$IP}/country/");
                 $UL->machine_name = $request['machine_name'];
                 $UL->save();
 
