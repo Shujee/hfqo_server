@@ -167,8 +167,11 @@ class AccessController extends Controller
                 $DL = new \App\Download;
                 $DL->access_id = $MyAccess->id;
                 $DL->ip = $IP;
-                $DL->city = file_get_contents("https://ipapi.co/{$IP}/city/");
-                $DL->country = file_get_contents("https://ipapi.co/{$IP}/country/");
+
+                $Loc = $this->ip_2_city_country($IP);
+                $DL->city = $Loc['city'];
+                $DL->country = $Loc['country'];
+
                 $DL->machine_name = $request['machine_name'];
                 $DL->save();
 

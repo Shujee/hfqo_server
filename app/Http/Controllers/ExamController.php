@@ -231,8 +231,11 @@ class ExamController extends Controller
                 $UL = new \App\Upload;
                 $UL->access_id = $MyAccess->id;
                 $UL->ip = $IP;
-                $UL->city = file_get_contents("https://ipapi.co/{$IP}/city/");
-                $UL->country = file_get_contents("https://ipapi.co/{$IP}/country/");
+
+                $Loc = $this->ip_2_city_country($IP);
+                $UL->city = $Loc['city'];
+                $UL->country = $Loc['country'];
+
                 $UL->machine_name = $request['machine_name'];
                 $UL->save();
 

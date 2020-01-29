@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Notifications\IPAPIResolveFailed;
+use Exception;
+use Illuminate\Support\Facades\Log;
+
 /**
  * If you are under a load balancer, Laravel's \Request::ip() always return the balancer's IP.
  * This trait contains a method that returns the real client ip.
@@ -28,6 +32,27 @@ trait RequestIP
                     }
                 }
             }
+        }
+    }
+
+    public function ip_2_city_country($ip)
+    {
+        $http = new \GuzzleHttp\Client; 
+
+        try
+        {
+            //get token first
+            $response = $http->post("https://ipapi.co/$ip/json/");
+            $Loc = json_decode($response->getBody()->getContents(), true);
+            return [
+                'city' => $Loc['city'],
+                'country' => $Loc['country_name'], //Note that we are not using $Loc['country'] because that one contains country code, not country name.
+            ];
+        }
+        catch(Exception $e)
+        {
+            (new SlackAgent())->notify(new IPAPIResolveFailed($ip, request()->user(), $e));
+            return null;
         }
     }
 }
