@@ -6,8 +6,9 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Messages\SlackMessage;
 
-class IPAPIResolveFailed extends Notification
+class GenericException extends Notification
 {
     use Queueable;
 
@@ -46,10 +47,12 @@ class IPAPIResolveFailed extends Notification
      */
     public function toSlack($notifiable)
     {
-        return [
+        return (new SlackMessage)
+        ->to('#error')
+        ->content(json_encode([
             'IP' => $this->IP,
             'User' => $this->User->name,
-            'Error' => $this->Error->message,
-        ];
+            'Error' => $this->Error,
+            ], JSON_PRETTY_PRINT));
     }
 }

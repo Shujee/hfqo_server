@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Notifications\IPAPIResolveFailed;
+use App\Notifications\GenericException;
 use Exception;
 use Illuminate\Support\Facades\Log;
 
@@ -51,7 +51,7 @@ trait RequestIP
         }
         catch(Exception $e)
         {
-            (new SlackAgent())->notify(new IPAPIResolveFailed($ip, request()->user(), $e));
+            (new SlackAgent())->notify(new GenericException($ip, request()->user(), $e));
             return null;
         }
     }
