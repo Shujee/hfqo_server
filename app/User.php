@@ -102,14 +102,11 @@ class User extends Authenticatable
 
     public function myExamsDL()
     {
-        return $this->Accesses()->with('exam:id,name')->
-                    where('start', '<=', now())->
-                    where('end', '>=', now())->
-                    select(['id', 'exam_id'])->
-                    get()->
-                    filter(function($value, $key) { return !$value->is_expired;})->
-                    pluck('exam.name', 'id');
-    }
+        return $this->Accesses()->current()->
+                whereHas('exam', function($query) { $query->whereIsExpired(false); })->
+                with('exam:id,number,name,remarks,qa_count,updated_at')->
+                select(['id','exam_id', 'end'])->get();
+    }                 
 
     public function MyExamsUL()
     {

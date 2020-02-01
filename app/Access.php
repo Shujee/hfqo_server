@@ -50,4 +50,9 @@ class Access extends Model
                 $this->end >= now() &&
                 $this->user_id <= $user_id;
     }
+
+    public function scopeCurrent($query)
+    {
+        return $query->where('start', '<=', now())->where('end', '>=', now());
+    }
 }

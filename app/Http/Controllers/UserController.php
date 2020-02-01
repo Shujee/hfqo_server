@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\AccessibleExam as AccessibleExamResource;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Resources\User as UserResource;
@@ -127,7 +128,7 @@ class UserController extends Controller
     public function myexamsdl()
     {
         if(!request()->user()->trashed()) {
-            return request()->user()->myExamsDL();
+            return AccessibleExamResource::collection(request()->user()->myExamsDL());
         }
         else {
             return response()->json(['error' => 'Not authorized.'], 403);
