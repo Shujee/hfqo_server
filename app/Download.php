@@ -38,7 +38,7 @@ class Download extends Model
 
     public function Exam()
     {
-        return $this->Access->Exam();
+        return $this->Access()->Exam();
     }
 
     public function User()

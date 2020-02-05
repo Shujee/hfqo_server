@@ -29,7 +29,7 @@ export default {
 
   data() {
     return {
-      view: "hfqreport"
+      view: "users"
     };
   },
 

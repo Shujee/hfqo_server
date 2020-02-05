@@ -1,8 +1,7 @@
 <template>
   <v-card class="ma-0 pa-0">
     <v-card-title class="ma-0 py-1">
-      <v-icon class="mr-2">mdi-account</v-icon>
-      Users
+      <v-icon class="mr-2">mdi-account</v-icon>Users
       <v-spacer></v-spacer>
       <v-text-field
         v-model="search"
@@ -32,12 +31,28 @@
       :items-per-page="25"
       :search="search"
       :readonly="true"
+      show-expand
+      single-expand
+      item-key="id"
       :footer-props="{
         'items-per-page-options': [10,25,50]
       }"
       :sort-by="['updated_at']"
       :sort-desc="[true]"
     >
+      <template v-slot:expanded-item="{ item }">
+        <td :colspan="headers.length + 1" v-if="item.activity.length > 0">
+          <v-card flat class="my-1">
+            <v-card-text>
+              <activity-data-table :username="item.name" :activities="item.activity" />
+            </v-card-text>
+          </v-card>
+        </td>
+        <td :colspan="headers.length" v-else class="justify-center align-center text-center">
+          No activity
+        </td>
+      </template>
+
       <template v-slot:item.name="{ item }">
         <v-avatar size="32">
           <v-icon>mdi-account</v-icon>
@@ -46,7 +61,10 @@
       </template>
 
       <template v-slot:item.type="{ item }">
-         <v-chip :color="getColor(item.type)" dark>{{ item.type == 1 ? 'Admin' : (item.type == 2 ? 'Associate' : 'User') }}</v-chip>
+        <v-chip
+          :color="getColor(item.type)"
+          dark
+        >{{ item.type == 1 ? 'Admin' : (item.type == 2 ? 'Associate' : 'User') }}</v-chip>
       </template>
 
       <template v-slot:item.updated_at="{ item }">
@@ -86,10 +104,12 @@
 <script>
 import { mapGetters } from "vuex";
 import UserModal from "./UserModal";
+import ActivityDataTable from "./ActivityDataTable";
 
 export default {
   components: {
     UserModal,
+    ActivityDataTable
   },
 
   data() {
@@ -103,7 +123,7 @@ export default {
       headers: [
         { text: "Name", value: "name", sortable: false },
         { text: "Email", value: "email", sortable: false },
-        { text: "Type", value: "type", sortable: false, align: 'center' },
+        { text: "Type", value: "type", sortable: false, align: "center" },
         {
           text: "Last Updated",
           value: "updated_at",
@@ -116,10 +136,10 @@ export default {
   },
 
   methods: {
-    getColor (type) {
-      if (type == 1) return 'red'
-      else if (type == 2) return 'blue'
-      else return 'green'
+    getColor(type) {
+      if (type == 1) return "red";
+      else if (type == 2) return "blue";
+      else return "green";
     },
 
     deleteUser: async function(user) {
@@ -143,12 +163,12 @@ export default {
       this.user = user;
       this.dialog = true;
     },
-    
+
     createUser: async function() {
       this.editMode = false;
-      this.user = {name: null, email: null, password: null};
+      this.user = { name: null, email: null, password: null };
       this.dialog = true;
-    },
+    }
   },
 
   computed: {

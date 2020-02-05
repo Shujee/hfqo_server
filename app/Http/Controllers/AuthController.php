@@ -40,6 +40,7 @@ class AuthController extends Controller
             $Token = json_decode($response->getBody()->getContents(), true);
 
             $credentials = $request->only('email', 'password');
+            $U = null;
             if(Auth::once($credentials)) {
                 $U = Auth::getUser();
                 $IP = $request->getIp();
@@ -47,7 +48,8 @@ class AuthController extends Controller
             }
 
             return [
-                    'token' => $Token,
+                'type' => $U->type,
+                'token' => $Token,
             ];
         }
         catch(Exception $e)

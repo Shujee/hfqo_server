@@ -19,7 +19,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        $Users = User::where('id', '!=', 1)->get(); //return all users except super admin
+        //return all users except super admin
+        $Users = \App\User::where('id', '!=', 1)->get();
         return UserResource::collection($Users);
     }
 

@@ -44,6 +44,16 @@ class Access extends Model
         return $this->belongsTo('App\User');
     }
 
+    public function Downloads()
+    {
+        return $this->hasMany('App\Download');
+    }
+
+    public function Uploads()
+    {
+        return $this->hasMany('App\Upload');
+    }
+
     public function isValid($user_id)
     {
         return $this->start <= now() &&

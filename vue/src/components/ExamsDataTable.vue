@@ -99,40 +99,12 @@ export default {
       show_permissions: false,
       search: "",
       headers: [
-        { 
-          text: "Number", 
-          value: "number", 
-          sortable: false 
-        },
-        { 
-          text: "Name", 
-          value: "name", 
-          sortable: false 
-        },
-        {
-          text: "Uploaded By",
-          value: "uploader",
-          align: "center",
-          sortable: false
-        },
-        {
-          text: "QA Count",
-          value: "qa_count",
-          align: "center",
-          sortable: false
-        },
-        {
-          text: "Expired",
-          value: "is_expired",
-          align: "center",
-          sortable: false
-        },
-        {
-          text: "Last Updated",
-          value: "updated_at",
-          align: "center",
-          sortable: false
-        },
+        { text: "Number", value: "number", sortable: false },
+        { text: "Name", value: "name", sortable: false },
+        { text: "Uploaded By", value: "uploader", align: "center", sortable: false },
+        { text: "QA Count", value: "qa_count", align: "center", sortable: false },
+        { text: "Expired", value: "is_expired", align: "center", sortable: false },
+        { text: "Last Updated", value: "updated_at", align: "center", sortable: false },
         { text: "", value: "actions", sortable: false, align: "end" }
       ]
     };

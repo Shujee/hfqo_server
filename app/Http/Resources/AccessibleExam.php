@@ -4,6 +4,9 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * Used by HFQApp to show the list of exams that user can download
+ */
 class AccessibleExam extends JsonResource
 {
     /**

@@ -90,6 +90,48 @@ class User extends Authenticatable
         return $this->hasMany('App\Access');
     }
 
+    /**
+     * Exams downloaded by this user
+     *
+     * @return void
+     */
+    public function DownloadedExams()
+    {
+        return \App\Download::
+                join('accesses', 'downloads.access_id', '=', 'accesses.id')->
+                join('exams', 'accesses.exam_id', '=', 'exams.id')->
+                where('accesses.user_id', $this->id)->
+                selectRaw('exams.id,exams.number,exams.name,exams.qa_count,exams.is_expired,downloads.updated_at,\'D\' as type')->
+                get();
+    }
+    
+    /**
+     * Results uploaded by this user
+     *
+     * @return void
+     */
+    public function UploadedResults()
+    {
+        return \App\Upload::
+                join('accesses', 'uploads.access_id', '=', 'accesses.id')->
+                join('exams', 'accesses.exam_id', '=', 'exams.id')->
+                where('accesses.user_id', $this->id)->
+                selectRaw('exams.id,exams.number,exams.name,exams.qa_count,exams.is_expired,uploads.updated_at,\'R\' as type')->
+                get();
+    }
+
+    /**
+     * Exams uploaded by this associate
+     *
+     * @return void
+     */
+    public function UploadedExams()
+    {
+        return $this->hasMany('App\Exam', 'uploader_id', 'id')
+                ->selectRaw('id,number,name,qa_count,is_expired,updated_at,\'U\' as type')
+                ->get();
+    }
+
     public function isAdmin() 
     {
         return $this->type == User::USERTYPE_ADMIN;
@@ -100,6 +142,11 @@ class User extends Authenticatable
         return $this->type == User::USERTYPE_UPLOADER;
     }
 
+    /**
+     * Exams that current user can download
+     *
+     * @return void
+     */
     public function myExamsDL()
     {
         return $this->Accesses()->current()->
@@ -108,10 +155,15 @@ class User extends Authenticatable
                 select(['id','exam_id', 'end'])->get();
     }                 
 
-    public function MyExamsUL()
+    /**
+     * Active exams owned by current user (associate)
+     *
+     * @return void
+     */
+    public function myExamsUL()
     {
-        return Exam::where('is_expired', false)->
-                    where('uploader_id', $this->id)->
+        return Exam::whereIsExpired(false)->
+                    whereUploaderId($this->id)->
                     select(['id', 'number', 'name', 'qa_count', 'origfilename', 'remarks', 'updated_at'])->get();
     }
 }
