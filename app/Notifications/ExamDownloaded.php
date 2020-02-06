@@ -47,7 +47,7 @@ class ExamDownloaded extends Notification
         return (new SlackMessage)
             ->content(
                 "Master file downloaded:
-                    Name: {$this->DL->Exam->name}
+                    Name: {$this->DL->Access->Exam->name}
                     User: {$this->DL->User->name}
                     IP: {$this->DL->ip}
                     Location: {$this->DL->city}, {$this->DL->country}");
