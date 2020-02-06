@@ -20,7 +20,13 @@
           :sort-desc="[true]"
         >
           <template v-slot:item.user_name="{ item }">
-            <v-select v-if="item.added" :items="users" v-model="item.user_id" item-text="name" item-value="id" />
+            <v-select
+              v-if="item.added"
+              :items="users"
+              v-model="item.user_id"
+              item-text="name"
+              item-value="id"
+            />
             <span>{{ item.user_name }}</span>
           </template>
 
@@ -33,11 +39,16 @@
           </template>
 
           <template v-slot:item.updated_at="{ item }">
-            <v-layout justify-center v-if="!item.added">
-              <v-chip success outlined ml-3>
-                <v-icon left outline mr-2>mdi-clock</v-icon>
-                {{item.age}}
-              </v-chip>
+            <v-layout justify-center>
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                  <v-chip success outlined ml-3 v-on="on">
+                    <v-icon left outline mr-2>mdi-clock</v-icon>
+                    {{item.age}}
+                  </v-chip>
+                </template>
+                <span>{{new Date(item.updated_at).toString()}}</span>
+              </v-tooltip>
             </v-layout>
           </template>
 
@@ -68,7 +79,7 @@
 <script>
 import DatePickerIcon from "./DatePickerIcon";
 import { mapGetters } from "vuex";
-import moment from 'moment';
+import moment from "moment";
 
 export default {
   name: "ExamAccessModal",
@@ -103,7 +114,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(["users"]),    
+    ...mapGetters(["users"]),
     show: {
       get() {
         return this.value;
@@ -150,16 +161,16 @@ export default {
     addAccess() {
       var StartDate = moment();
       var EndDate = moment();
-      EndDate.add(7, 'days');
+      EndDate.add(7, "days");
 
       this.accesses.push({
         added: true,
-        deleted : false,
-        user_id : null,
-        exam_id : this.exam.id,
-        start : StartDate.toISOString(),
-        end : EndDate.toISOString()
-      })
+        deleted: false,
+        user_id: null,
+        exam_id: this.exam.id,
+        start: StartDate.toISOString(),
+        end: EndDate.toISOString()
+      });
     },
 
     updateAccesses() {

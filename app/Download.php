@@ -36,11 +36,6 @@ class Download extends Model
         return $this->belongsTo('App\Access');
     }
 
-    public function Exam()
-    {
-        return $this->Access()->Exam();
-    }
-
     public function User()
     {
         return $this->Access->User();

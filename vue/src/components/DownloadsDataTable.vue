@@ -53,10 +53,15 @@
 
       <template v-slot:item.created_at="{ item }">
         <v-layout justify-center>
-          <v-chip success outlined ml-3>
-            <v-icon left outline mr-2>mdi-clock</v-icon>
-            {{item.age}}
-          </v-chip>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-chip success outlined ml-3 v-on="on">
+                <v-icon left outline mr-2>mdi-clock</v-icon>
+                {{item.age}}
+              </v-chip>
+            </template>
+            <span>{{new Date(item.created_at).toString()}}</span>
+          </v-tooltip>
         </v-layout>
       </template>
     </v-data-table>

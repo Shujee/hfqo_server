@@ -101,7 +101,7 @@ class User extends Authenticatable
                 join('accesses', 'downloads.access_id', '=', 'accesses.id')->
                 join('exams', 'accesses.exam_id', '=', 'exams.id')->
                 where('accesses.user_id', $this->id)->
-                selectRaw('exams.id,exams.number,exams.name,exams.qa_count,exams.is_expired,downloads.updated_at,\'D\' as type')->
+                selectRaw('exams.id,exams.number,exams.name,exams.qa_count,downloads.ip,downloads.city,downloads.country,downloads.updated_at,\'D\' as type')->
                 get();
     }
     
@@ -116,7 +116,7 @@ class User extends Authenticatable
                 join('accesses', 'uploads.access_id', '=', 'accesses.id')->
                 join('exams', 'accesses.exam_id', '=', 'exams.id')->
                 where('accesses.user_id', $this->id)->
-                selectRaw('exams.id,exams.number,exams.name,exams.qa_count,exams.is_expired,uploads.updated_at,\'R\' as type')->
+                selectRaw('exams.id,exams.number,exams.name,exams.qa_count,uploads.ip,uploads.city,uploads.country,uploads.updated_at,\'R\' as type')->
                 get();
     }
 

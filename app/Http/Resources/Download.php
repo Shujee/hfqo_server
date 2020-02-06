@@ -15,7 +15,7 @@ class Download extends JsonResource
     public function toArray($request)
     {
         $U = $this->User;
-        $E = $this->Exam;
+        $E = $this->Access->Exam;
 
         return [
             'user_name' => $U == null ? '' : $U->name,

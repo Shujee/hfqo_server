@@ -48,9 +48,11 @@
             </v-card-text>
           </v-card>
         </td>
-        <td :colspan="headers.length" v-else class="justify-center align-center text-center">
-          No activity
-        </td>
+        <td
+          :colspan="headers.length"
+          v-else
+          class="justify-center align-center text-center"
+        >No activity</td>
       </template>
 
       <template v-slot:item.name="{ item }">
@@ -69,10 +71,15 @@
 
       <template v-slot:item.updated_at="{ item }">
         <v-layout justify-center>
-          <v-chip success outlined ml-3>
-            <v-icon left outline mr-2>mdi-clock</v-icon>
-            {{item.age}}
-          </v-chip>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-chip success outlined ml-3 v-on="on">
+                <v-icon left outline mr-2>mdi-clock</v-icon>
+                {{item.age}}
+              </v-chip>
+            </template>
+            <span>{{new Date(item.updated_at).toString()}}</span>
+          </v-tooltip>
         </v-layout>
       </template>
 
