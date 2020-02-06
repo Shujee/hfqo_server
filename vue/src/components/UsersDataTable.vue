@@ -44,7 +44,7 @@
         <td :colspan="headers.length + 1" v-if="item.activity.length > 0">
           <v-card flat class="my-1">
             <v-card-text>
-              <activity-data-table :username="item.name" :activities="item.activity" />
+              <activity-data-table :userName="item.name" :userType="item.type" :activities="item.activity" />
             </v-card-text>
           </v-card>
         </td>

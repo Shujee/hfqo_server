@@ -1,6 +1,6 @@
 <template>
   <v-data-table
-    :headers="headers"
+    :headers="computedHeaders"
     class="elevation-1 px-0 mx-0"
     :items-per-page="10"
     :items="activities"
@@ -10,7 +10,7 @@
     'items-per-page-options': [10,25, 50]
     }"
     :sort-desc="true"
-    :caption="username + ' activities'"
+    :caption="userName + ' activities'"
     sort-by="updated_at"
     full-width
   >
@@ -19,7 +19,7 @@
     </template>
 
     <template v-slot:item.action="{ item }">
-      <v-chip outlined class="ma-2" :color="type2color(item.type)" :text-color="type2color(item.type)">
+      <v-chip outlined class="my-2" :color="type2color(item.type)" :text-color="type2color(item.type)">
         <v-avatar left>
           <v-icon>{{ type2icon(item.type) }}</v-icon>
         </v-avatar>
@@ -42,7 +42,8 @@
 export default {
   props: {
     activities: Array,
-    username: String
+    userName: String,
+    userType: Number,
   },
   data() {
     return {
@@ -62,7 +63,8 @@ export default {
         },
         {
           text: "City",
-          value: "city"
+          value: "city",
+          visible: false,
         },
         {
           text: "Country",
@@ -70,7 +72,8 @@ export default {
         },
         {
           text: "Action",
-          value: "action"
+          value: "action",
+          align: 'center',
         },
         {
           text: "Activity Date",
@@ -80,6 +83,22 @@ export default {
         }
       ]
     };
+  },
+  computed: {
+   computedHeaders () {
+     if(this.userType == 2) //do not show ip, country and city columns for uploader
+     {
+       var cols =this.headers.filter(e => e.value !== 'ip' && e.value !== 'country' && e.value !== 'city') ;
+       console.log(cols);
+      return cols;
+     }
+     //vm.$recompute('key'
+    else
+    {
+      console.log("all of them" + this.userType);
+      return this.headers;
+    }
+   }
   },
   methods: {
     type2color: function(type) {
@@ -97,6 +116,12 @@ export default {
       else if (type === "D") return "Exam Downloaded";
       else if (type === "U") return "Exam Uploaded";
     }
-  }
+  },
+
+  watch: {
+    userType: {
+
+    }
+  },
 };
 </script>
