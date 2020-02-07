@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * \App\Access
@@ -30,6 +31,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Access extends Model
 {
+    use SoftDeletes;
+    
     protected $dates = [
         'start', 'end'
     ];

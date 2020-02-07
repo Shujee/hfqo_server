@@ -6,6 +6,7 @@ use App\Exam;
 use Illuminate\Http\Request;
 use App\Http\Resources\Exam as ExamResource;
 use App\Http\Resources\Access as AccessResource;
+use App\Http\Resources\NewlyCreatedExam;
 use App\Notifications\ExamUploaded;
 use Illuminate\Support\Facades\Log;
 use App\Notifications\ResultUploaded;
@@ -111,7 +112,7 @@ class ExamController extends Controller
 
         (new SlackAgent())->notify(new ExamUploaded($Exam, true));
 
-        return $Exam;
+        return NewlyCreatedExam::collection($Exam);
     }
 
     /**
