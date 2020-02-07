@@ -127,6 +127,17 @@ export default new Vuex.Store({
                 });
         },
 
+        fetchGitVersion() {
+            return axios
+                .get("gitversion")
+                .then(response => {
+                    return response.data;
+                })
+                .catch(() => {
+                    return '';
+                });
+        },
+
         fetchExams(context) {
            
             return axios

@@ -74,4 +74,21 @@ class AuthController extends Controller
         });
         return response()->json('success', 200);
     }
+
+    public function gitversion() { 
+        $MAJOR = 1;
+        $MINOR = 2;
+        $PATCH = 3;
+    
+        $commitHash = trim(exec('git log --pretty="%h" -n1 HEAD'));
+
+        $commitDate = new \DateTime(trim(exec('git log -n1 --pretty=%ci HEAD')));
+        $commitDate->setTimezone(new \DateTimeZone('UTC'));
+
+        return [
+            'version' => sprintf('v%s.%s.%s', $MAJOR, $MINOR, $PATCH),
+            'commit_hash' => sprintf('%s', $commitHash),
+            'commit_date' => $commitDate->format('Y-m-d H:i:s'),
+        ];
+    }
 }
