@@ -47,7 +47,7 @@
                     {{item.age}}
                   </v-chip>
                 </template>
-                <span>{{new Date(item.updated_at).toString()}}</span>
+                <span>{{ item.updated_at === null ? "New" : new Date(item.updated_at).toString()}}</span>
               </v-tooltip>
             </v-layout>
           </template>
@@ -106,7 +106,7 @@ export default {
           value: "updated_at",
           align: "center",
           sortable: false,
-          width: 150
+          width: 150,
         },
         { text: "Delete", value: "actions", sortable: false, width: 100 }
       ]
@@ -169,7 +169,8 @@ export default {
         user_id: null,
         exam_id: this.exam.id,
         start: StartDate.toISOString(),
-        end: EndDate.toISOString()
+        end: EndDate.toISOString(),
+        updated_at: null,
       });
     },
 

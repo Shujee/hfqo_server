@@ -19,12 +19,11 @@ Route::prefix('v1')->middleware('cors')->group(function()
         Route::options('/{any?}', function() {})->where('any', '.*');
     }
 
+    Route::get('/gitversion', 'AuthController@gitversion');   
     Route::post('/login', 'AuthController@login')->name('login');
 
     Route::group(['middleware' => 'auth:api'], function()
     {
-        Route::get('/gitversion', 'AuthController@gitversion');   
-
         Route::post('/logout', 'AuthController@logout');
 
         Route::get('/exams', 'ExamController@index')->middleware('can:viewAny,App\Exam');

@@ -112,7 +112,7 @@ class ExamController extends Controller
 
         (new SlackAgent())->notify(new ExamUploaded($Exam, true));
 
-        return NewlyCreatedExam::collection($Exam);
+        return new NewlyCreatedExam($Exam);
     }
 
     /**
