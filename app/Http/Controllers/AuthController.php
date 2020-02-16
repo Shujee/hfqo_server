@@ -44,10 +44,17 @@ class AuthController extends Controller
             if(Auth::once($credentials)) {
                 $U = Auth::getUser();
                 $IP = $request->getIp();
-                (new SlackAgent())->notify(new UserLogin($U->name, $IP));
+
+                try {
+                    (new SlackAgent())->notify(new UserLogin($U->name, $IP));
+                }
+                catch(Exception $e) {
+                    Log::alert("Slack notification failed [USER LOGGED IN]. {$e->getMessage()}. User: {$U->name}");
+                }
             }
 
             return [
+                'name' => $U->name,
                 'type' => $U->type,
                 'token' => $Token,
             ];

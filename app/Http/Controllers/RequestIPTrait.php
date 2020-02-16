@@ -53,7 +53,14 @@ trait RequestIP
                     'country' => $Loc['country_name'], //Note that we are not using $Loc['country'] because that one contains country code, not country name.
                 ];
             } catch (Exception $e) {
-                (new SlackAgent())->notify(new GenericException($ip, request()->user(), $e));
+
+                try {
+                    (new SlackAgent())->notify(new GenericException($ip, request()->user(), $e));
+                }
+                catch(Exception $e) {
+                    Log::alert("Slack notification failed [IP RESOLUTION FAILED]. {$e->getMessage()}.");
+                }               
+                
                 return null;
             }
         }

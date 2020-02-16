@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\RequestIP;
 use App\Notifications\ExamDownloaded;
+use Exception;
 
 class AccessController extends Controller
 {
@@ -175,15 +176,21 @@ class AccessController extends Controller
                 $DL->machine_name = $request['machine_name'];
                 $DL->save();
 
-                $xps = Storage::disk('local')->get($exam->xps_file_name);
-                $xml = Storage::disk('local')->get($exam->xml_file_name);
+                if(Storage::disk('local')->exists($exam->xps_file_name) && Storage::disk('local')->exists($exam->xml_file_name))
+                {
+                    $xps = Storage::disk('local')->get($exam->xps_file_name);
+                    $xml = Storage::disk('local')->get($exam->xml_file_name);
 
-                if($xps !== false && $xml !== false) {
                     $xps64 = base64_encode($xps);
                     $xml64 = base64_encode($xml);
 
-                    (new SlackAgent())->notify(new ExamDownloaded($DL));
-        
+                    try {
+                        (new SlackAgent())->notify(new ExamDownloaded($DL));
+                    }
+                    catch(Exception $e) {
+                        Log::alert("Slack notification failed [EXAM DOWNLOADED]. {$e->getMessage()}. User: {$request->user()->name}, Exam: {$exam->name}");
+                    }               
+    
                     return response()->json([
                         'id' => $exam->id,
                         'xps'=> $xps64,

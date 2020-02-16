@@ -10,6 +10,7 @@ use App\Http\Resources\NewlyCreatedExam;
 use App\Notifications\ExamUploaded;
 use Illuminate\Support\Facades\Log;
 use App\Notifications\ResultUploaded;
+use Exception;
 
 class ExamController extends Controller
 {
@@ -55,8 +56,8 @@ class ExamController extends Controller
      */
     public function store(Request $request)
     {
+        Log::alert("{$request->user()->name}  (id={$request->user()->id}) tried to upload a new master file.");
         if (!$request->user()->isUploader()) {
-            Log::alert("{$request->user()->name}  (id={$request->user()->id}) tried to upload a new master file.");
 
             return response()->json([
                 'error' => 'Not allowed.'
@@ -110,7 +111,12 @@ class ExamController extends Controller
             $Q->save();
         }
 
-        (new SlackAgent())->notify(new ExamUploaded($Exam, true));
+        try {
+            (new SlackAgent())->notify(new ExamUploaded($Exam, true));
+        }
+        catch(Exception $e) {
+            Log::alert("Slack notification failed [EXAM UPLOADED]. {$e->getMessage()}, User: {$request->user()->name}, Exam: {$Exam->name}");
+        }
 
         return new NewlyCreatedExam($Exam);
     }
@@ -166,7 +172,14 @@ class ExamController extends Controller
                 \App\QA::create($qa);    
             }
 
-            (new SlackAgent())->notify(new ExamUploaded($exam, false));
+            try {
+                (new SlackAgent())->notify(new ExamUploaded($exam, false));
+            }
+            catch(Exception $e) {
+                Log::alert("Slack notification failed [EXAM FILES UPDATED]. {$e->getMessage()}. User: {$request->user()->name}, Exam: {$exam->name}");
+            }
+
+            
 
             return "true";
 
@@ -248,7 +261,12 @@ class ExamController extends Controller
                     \App\UploadRow::create($r);    
                 }
 
-                (new SlackAgent())->notify(new ResultUploaded($UL));
+                try {
+                    (new SlackAgent())->notify(new ResultUploaded($UL));
+                }
+                catch(Exception $e) {
+                    Log::alert("Slack notification failed [RESULT UPLOADED]. {$e->getMessage()}. User: {$request->user()->name}, Exam: {$exam->name}");
+                }               
 
                 return response()->json('success', 201);
             }
