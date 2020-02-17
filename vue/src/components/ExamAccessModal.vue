@@ -22,7 +22,7 @@
           <template v-slot:item.user_name="{ item }">
             <v-select
               v-if="item.added"
-              :items="users"
+              :items="downloaders"
               v-model="item.user_id"
               item-text="name"
               item-value="id"
@@ -115,6 +115,9 @@ export default {
 
   computed: {
     ...mapGetters(["users"]),
+    downloaders() {
+      return this.users.filter(e => e.type == 3);
+    },
     show: {
       get() {
         return this.value;
