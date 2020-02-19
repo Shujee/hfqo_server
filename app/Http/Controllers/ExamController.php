@@ -226,11 +226,6 @@ class ExamController extends Controller
                 'error' => 'The specified master file has been deleted.'
             ], 422);
         }
-        else if($exam->is_expired){
-            return response()->json([
-                'error' => 'The specified master file has expired.'
-            ], 422);
-        }
         else {
             //Locate the Access row for current User and Exam
             $MyAccess = $exam->GetFirstValidAccess($request->user()->id);
