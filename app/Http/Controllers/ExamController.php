@@ -324,11 +324,10 @@ class ExamController extends Controller
             $join->on('uploadrows.a1', '=', 'qas.index')->
                  orOn('uploadrows.a2', '=', 'qas.index')->
                  orOn('uploadrows.a3', '=', 'qas.index');
-
-            $join->whereRaw('qas.exam_id = accesses.exam_id');
         });
  
-        $Q = $Q->where('accesses.exam_id', $request['exam']);
+        $Q = $Q->where('accesses.exam_id', $request['exam'])
+                ->where('qas.exam_id', 'accesses.exam_id'); //this condition should actually go into the join call above, but i can't find a way to group together the conditions that are already there
 
         if($request->filled('start')) {
             $Q = $Q->where('uploads.created_at', '>=', $request['start']);
