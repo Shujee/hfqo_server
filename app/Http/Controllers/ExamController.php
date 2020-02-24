@@ -321,13 +321,12 @@ class ExamController extends Controller
         ::join('uploads', 'uploadrows.upload_id', '=', 'uploads.id')
         ->join('accesses', 'uploads.access_id', '=', 'accesses.id')
         ->join('qas', function($join) { 
-            $join->on(DB::raw('(`qas`.`exam_id` = `accesses`.`exam_id`)'));
-            })
-        ->join('qas', function($join) {
+            $join->on(DB::raw('(`qas`.`exam_id` = `accesses`.`exam_id`)'), DB::raw(''), DB::raw(''));
+
             $join->on('uploadrows.a1', '=', 'qas.index')->
                  orOn('uploadrows.a2', '=', 'qas.index')->
                  orOn('uploadrows.a3', '=', 'qas.index');
-            });
+        });
  
         $Q = $Q->where('accesses.exam_id', $request['exam']);
 
