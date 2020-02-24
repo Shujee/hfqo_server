@@ -327,7 +327,7 @@ class ExamController extends Controller
         });
  
         $Q = $Q->where('accesses.exam_id', $request['exam'])
-                ->where('qas.exam_id', 'accesses.exam_id'); //this condition should actually go into the join call above, but i can't find a way to group together the conditions that are already there
+                ->whereRaw('qas.exam_id = accesses.exam_id'); //this condition should actually go into the join call above, but i can't find a way to group together the conditions that are already there
 
         if($request->filled('start')) {
             $Q = $Q->where('uploads.created_at', '>=', $request['start']);
