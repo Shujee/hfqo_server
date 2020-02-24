@@ -321,7 +321,7 @@ class ExamController extends Controller
         ::join('uploads', 'uploadrows.upload_id', '=', 'uploads.id')
         ->join('accesses', 'uploads.access_id', '=', 'accesses.id')
         ->join('qas', function($join) { 
-            $join->on('qas.exam_id', '=', 'accesses.exam_id');
+            $join->on(DB::raw('(`qas`.`exam_id` = `accesses`.`exam_id`)'));
 
             $join->on('uploadrows.a1', '=', 'qas.index')->
                  orOn('uploadrows.a2', '=', 'qas.index')->
