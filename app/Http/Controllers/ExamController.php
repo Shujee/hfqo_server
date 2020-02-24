@@ -11,6 +11,7 @@ use App\Notifications\ExamUploaded;
 use Illuminate\Support\Facades\Log;
 use App\Notifications\ResultUploaded;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class ExamController extends Controller
 {
@@ -166,7 +167,10 @@ class ExamController extends Controller
 
             $qas = json_decode($request['qas'], true);
 
-            //insert all result rows in UploadRow table
+            //delete old QAs of this exam
+            $exam->QAs()->delete();
+
+            //insert new QAs
             foreach ($qas as $qa) {
                 $qa['exam_id'] = $exam->id;
                 \App\QA::create($qa);    
@@ -316,13 +320,15 @@ class ExamController extends Controller
         $Q = \App\UploadRow 
         ::join('uploads', 'uploadrows.upload_id', '=', 'uploads.id')
         ->join('accesses', 'uploads.access_id', '=', 'accesses.id')
-        ->join('exams', 'accesses.exam_id', '=', 'exams.id')
         ->join('qas', function($join) { 
-            $join->on('uploadrows.a1', '=', 'qas.index');
             $join->on('qas.exam_id', '=', 'accesses.exam_id');
+
+            $join->on('uploadrows.a1', '=', 'qas.index')->
+                 orOn('uploadrows.a2', '=', 'qas.index')->
+                 orOn('uploadrows.a3', '=', 'qas.index');
         });
  
-        $Q = $Q->where('exams.id', $request['exam']);
+        $Q = $Q->where('accesses.exam_id', $request['exam']);
 
         if($request->filled('start')) {
             $Q = $Q->where('uploads.created_at', '>=', $request['start']);
@@ -337,19 +343,19 @@ class ExamController extends Controller
             $Q = $Q->where('uploads.country', $request['location']['country']);
         }
 
-        $Q = $Q->groupBy('uploadrows.a1', 'qas.question', 'qas.answer');
+        $Q = $Q->groupBy('qas.index', 'qas.question', 'qas.answer');
 
         if($request->filled('frequency') && $request['frequency'] !== 0)
         {
             //For 3, we'll return everything >= 3. For 1 or 2, we'll perform exact match only.
             if($request['frequency'] == 3)
-                $Q = $Q->havingRaw('COUNT(*) >= ?', [ $request['frequency'] ]);
+                $Q = $Q->havingRaw('freq >= ?', [ $request['frequency'] ]);
             else
-                $Q = $Q->havingRaw('COUNT(*) = ?', [ $request['frequency'] ]);
+                $Q = $Q->havingRaw('freq = ?', [ $request['frequency'] ]);
         }
 
         $Q = $Q->orderBy('freq', 'DESC')
-                ->selectRaw('uploadrows.a1 as `index`, qas.question, qas.answer, COUNT(*) as freq');
+                ->selectRaw('qas.index as `index`, qas.question, qas.answer, COUNT(*) as freq');
 
         return $Q;
     }
