@@ -276,6 +276,13 @@ class ExamController extends Controller
                 //insert all result rows in UploadRow table
                 foreach ($result as $r) {
                     $r['upload_id'] = $UL->id;
+                    
+                    if($r['a2'] == '')
+                        $r['a2'] = null;
+
+                    if($r['a3'] == '')
+                        $r['a3'] = null;
+
                     \App\UploadRow::create($r);    
                 }
 
