@@ -10,6 +10,7 @@ use App\Http\Resources\NewlyCreatedExam;
 use App\Notifications\ExamUploaded;
 use Illuminate\Support\Facades\Log;
 use App\Notifications\ResultUploaded;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
@@ -334,7 +335,11 @@ class ExamController extends Controller
         }
         
         if($request->filled('end')) {
-            $Q = $Q->where('uploads.created_at', '<=', $request['end']);
+            //End date is inclusive, so we'll acccept anything that is less than next day.
+            $end = new \Carbon\Carbon($request->end);
+            $end = $end->addDays(1);
+
+            $Q = $Q->where('uploads.created_at', '<', $end);
         }
 
         if($request->filled('location')) {
