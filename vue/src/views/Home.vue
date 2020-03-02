@@ -1,11 +1,12 @@
 <template>
   <v-container fluid class="ma-0 pa-0 align-start child-flex">
     <nav-drawer @click="changeView" />
-    <ExamsDataTable v-if="this.view == 'exams'" />
-    <UsersDataTable v-if="this.view == 'users'" />
-    <DownloadsDataTable v-if="this.view == 'downloads'" />
-    <UploadsDataTable v-if="this.view == 'uploads'" />
-    <HFQReport v-if="this.view == 'hfqreport'" />
+    <exams-data-table v-if="this.view == 'exams'" />
+    <users-data-table v-if="this.view == 'users'" />
+    <downloads-data-table v-if="this.view == 'downloads'" />
+    <uploads-data-table v-if="this.view == 'uploads'" />
+    <hfq-report v-if="this.view == 'hfqreport'" />
+    <frequency-grid v-if="this.view == 'frequencygrid'" />
   </v-container>
 </template>
 
@@ -15,7 +16,8 @@ import ExamsDataTable from "../components/ExamsDataTable.vue";
 import UsersDataTable from "../components/UsersDataTable.vue";
 import DownloadsDataTable from "../components/DownloadsDataTable.vue";
 import UploadsDataTable from "../components/UploadsDataTable.vue";
-import HFQReport from "../components/HFQReport.vue";
+import HfqReport from "../components/HFQReport.vue";
+import FrequencyGrid from "../components/FrequencyGrid.vue";
 
 export default {
   components: {
@@ -24,12 +26,13 @@ export default {
     UsersDataTable,
     DownloadsDataTable,
     UploadsDataTable,
-    HFQReport
+    HfqReport,
+    FrequencyGrid,
   },
 
   data() {
     return {
-      view: "users"
+      view: "exams"
     };
   },
 

@@ -33,7 +33,7 @@ class Upload extends Model
 {
     public function Access()
     {
-        return $this->belongsTo('App\Access');
+        return $this->belongsTo('App\Access')->withTrashed();
     }
 
     public function User()

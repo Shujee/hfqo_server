@@ -55,7 +55,13 @@ export default {
           subtitle: "Generate high-frequency questions report",
           icon: "mdi-file-chart",
           view: "hfqreport"
-        }
+        },
+        {
+          title: "Frequency Grid",
+          subtitle: "Manually submit QA indexes to update HFQ Report",
+          icon: "mdi-grid",
+          view: "frequencygrid"
+        },
       ],
       right: null
     };

@@ -232,8 +232,26 @@ class ExamController extends Controller
             ], 422);
         }
         else {
-            //Locate the Access row for current User and Exam
-            $MyAccess = $exam->GetFirstValidAccess($request->user()->id);
+
+            //For admins, we'll create an Access row on the fly if one doesn't exist already for the specified exam
+            if($request->user()->isAdmin()) {
+                $MyAccess = $exam->GetFirstValidAccess($request->user()->id);
+                
+                if($MyAccess == null) {
+                    $MyAccess = new \App\Access;
+                    
+                    $MyAccess->user_id = $request->user()->id;
+                    $MyAccess->exam_id = $exam->id;
+                    $MyAccess->start = Carbon::now();
+                    $MyAccess->end = Carbon::now()->addDays(7);
+
+                    $MyAccess->save();
+                }
+            }
+            else {
+                //Locate the Access row for current User and Exam
+                $MyAccess = $exam->GetFirstValidAccess($request->user()->id);
+            }
 
             if($MyAccess == null){
                 return response()->json([

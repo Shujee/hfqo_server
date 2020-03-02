@@ -290,6 +290,16 @@ export default new Vuex.Store({
             }
         },
 
+        uploadFrequency(context, {exam_id, machine_name, freq}) {
+            if (context.getters.loggedIn) {
+                return axios
+                    .post('exam/' + exam_id + '/upload_result', {
+                        machine_name: machine_name,
+                        result: JSON.stringify(freq),
+                    });
+            }
+        },
+
         fetchDownloads(context) {
             return axios
                 .get("downloads")
