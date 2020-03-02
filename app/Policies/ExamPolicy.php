@@ -115,7 +115,7 @@ class ExamPolicy
         if($user->trashed())
             return false;
 
-        if($exam->trashed() || $exam->is_expired)
+        if($exam->trashed())
             return false;
         else
             return $exam->ValidAccessExists($user->id);
