@@ -29,6 +29,11 @@ class ExamController extends Controller
         return ExamResource::collection($Exams);
     }
 
+    public function view(\App\Exam $exam)
+    {
+        return new ExamResource($exam);
+    }
+
     public function names()
     {
         return \App\Exam::selectRaw("CONCAT(`number`, ' (', `name`, ')') as name, id")->get();

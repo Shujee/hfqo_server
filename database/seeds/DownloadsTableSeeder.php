@@ -46,6 +46,13 @@ class DownloadsTableSeeder extends Seeder
             $dl->updated_at = $dl->created_at;
             $dl->save();
 
+            //Create some dummy camera snapshots for the download
+            factory(Snapshot::class, 5)->make()->each(function ($sn) use (&$faker, &$dl) {
+                $sn->download_id = $dl->id;
+
+                $sn->save();
+            });
+            
             //Create Upload entry for 90% of download entries
             if($faker->boolean(90))
             {

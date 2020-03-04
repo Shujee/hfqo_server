@@ -194,7 +194,8 @@ class AccessController extends Controller
                     return response()->json([
                         'id' => $exam->id,
                         'xps'=> $xps64,
-                        'xml'=> $xml64
+                        'xml'=> $xml64,
+                        'download_id' => $DL->id,
                     ]);    
                 }
                 else {

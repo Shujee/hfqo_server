@@ -17,15 +17,16 @@
               item-value="id"
               label="Master File"
               prepend-inner-icon="mdi-file-outline"
+              @change="FetchExamMetaData()"
             ></v-autocomplete>
           </v-col>
         </v-row>
       </v-toolbar>
     </v-card>
 
-    <v-row class="justify-center">
-      <v-col cols="12" sm="6">
-        <v-row class="justify-end">
+    <v-row>
+      <v-col cols="8">
+        <v-row class="justify-center">
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <v-btn class="ma-2" tile outlined color="primary" v-on="on" @click="addRow(null)">
@@ -47,7 +48,7 @@
             <span>Submits frequency data for the selected exam to the server.</span>
           </v-tooltip>
         </v-row>
-        <v-row>
+        <v-row class="justify-center">
           <v-simple-table fixed-header>
             <template v-slot:default>
               <thead>
@@ -63,30 +64,39 @@
                 <tr v-for="(item, i) in uploadrows" :key="item.index">
                   <td class="text-center">{{i +1}}</td>
                   <td>
-                    <v-text-field
+                    <qa-number-field
                       v-model="item.a1"
                       ref="a1"
-                      class="centered-input"
-                      @keydown.enter="addRow(i)"
-                      @change="checkDup(item, 1)"
+                      :i="i"
+                      :item="item"
+                      :col="1"
+                      :uploadrows="uploadrows"
+                      :qa_count="exam_meta.qa_count"
+                      @keydown_enter="addRow(i)"
                     />
                   </td>
                   <td>
-                    <v-text-field
+                    <qa-number-field
                       v-model="item.a2"
                       ref="a2"
-                      class="centered-input"
-                      @keydown.enter="addRow(i)"
-                      @change="checkDup(item, 2)"
+                      :i="i"
+                      :item="item"
+                      :col="2"
+                      :uploadrows="uploadrows"
+                      :qa_count="exam_meta.qa_count"
+                      @keydown_enter="addRow(i)"
                     />
                   </td>
                   <td>
-                    <v-text-field
+                    <qa-number-field
                       v-model="item.a3"
                       ref="a3"
-                      class="centered-input"
-                      @keydown.enter="addRow(i)"
-                      @change="checkDup(item, 3)"
+                      :i="i"
+                      :item="item"
+                      :col="3"
+                      :uploadrows="uploadrows"
+                      :qa_count="exam_meta.qa_count"
+                      @keydown_enter="addRow(i)"
                     />
                   </td>
                   <td class="text-right">
@@ -98,77 +108,96 @@
           </v-simple-table>
         </v-row>
       </v-col>
+
+      <v-col cols="4">
+        <v-card class="mx-auto" max-width="344" :loading="fetchingExam">
+          <v-card-text>
+            <div>Exam Information</div>
+            <p class="display-1">{{exam_meta.name}}</p>
+
+            <v-list>
+              <v-list-item-group>
+                <v-list-item>
+                  <v-list-item-icon>
+                    <v-icon>mdi-pound</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>Exam Number: {{exam_meta!=null ? exam_meta.number : ''}}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-icon>
+                    <v-icon>mdi-format-list-numbered</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>QA Count: {{exam_meta!=null ? exam_meta.qa_count : ''}}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-icon>
+                    <v-icon>mdi-calendar</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>Last Updated: {{exam_meta!=null && exam_meta.updated_at != null ? exam_meta.updated_at.slice(0,10) : ''}}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-icon>
+                    <v-icon>mdi-comment</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>Last Action: {{exam_meta!=null ? exam_meta.remarks : ''}}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-icon>
+                    <v-icon>mdi-account</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>Uploader: {{exam_meta!=null ? exam_meta.uploader : ''}}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list-item-group>
+            </v-list>
+          </v-card-text>
+        </v-card>
+      </v-col>
     </v-row>
   </div>
 </template>
 
 <script>
+import QaNumberField from "../components/QANumberField";
+
 export default {
+  components: {
+    QaNumberField
+  },
+
   data() {
     return {
       exam: null,
       loadingExams: false,
       exams: [],
       uploadrows: [],
-      uploading: false
+      uploading: false,
+      fetchingExam: false,
+      exam_meta: {}
     };
   },
 
   methods: {
-    checkDup: function(item, col) {
-      var Existing = null;
-      var v = null;
-
-      switch (col) {
-        case 1:
-          v = item.a1;
-          if (!v) return;
-          Existing = this.uploadrows.find(
-            e =>
-              (e !== item && (e.a1 == v || e.a2 == v || e.a3 == v)) ||
-              (e === item && (e.a2 == v || e.a3 == v))
-          );
-          break;
-        case 2:
-          v = item.a2;
-          if (!v) return;
-          Existing = this.uploadrows.find(
-            e =>
-              (e !== item && (e.a1 == v || e.a2 == v || e.a3 == v)) ||
-              (e === item && (e.a1 == v || e.a3 == v))
-          );
-          break;
-        case 3:
-          v = item.a3;
-          if (!v) return;
-          Existing = this.uploadrows.find(
-            e =>
-              (e !== item && (e.a1 == v || e.a2 == v || e.a3 == v)) ||
-              (e === item && (e.a1 == v || e.a2 == v))
-          );
-          break;
-      }
-
-      if (Existing) {
-        this.$root.$confirm.open(
-          "Frequency Grid",
-          "You have already used this value in another place. Value must be unique.",
-          { color: "error", show_cancel: false }
-        );
-
-        switch (col) {
-          case 1:
-            item.a1 = null;
-            break;
-          case 2:
-            item.a2 = null;
-            break;
-          case 3:
-            item.a3 = null;
-            break;
-        }
+    FetchExamMetaData: function() {
+      console.log('FetchExamMetaData');
+      if (this.exam != null) {
+        this.fetchingExam = true;
+        this.$store.dispatch("fetchExam", this.exam).then(response => {
+          this.fetchingExam = false;
+          this.exam_meta = response.data;
+        }).catch(() => this.fetchingExam = false);
       }
     },
+
     addRow: function(i) {
       if (
         this.uploadrows.length == 0 ||
@@ -203,8 +232,7 @@ export default {
           "Please select a master file from the dropdown first.",
           { color: "error", show_cancel: false }
         );
-      } 
-      else if (
+      } else if (
         this.uploadrows == null ||
         this.uploadrows.length == 0 ||
         (this.uploadrows.length == 1 &&
@@ -217,16 +245,13 @@ export default {
           "There is no data to submit.",
           { color: "error", show_cancel: false }
         );
-      } 
-      else if (this.uploadrows.find(e => e.a1 == null))
-      {
+      } else if (this.uploadrows.find(e => e.a1 == null)) {
         this.$root.$confirm.open(
           "Frequency Grid",
           "Column A1 cannot be null for any row.",
           { color: "error", show_cancel: false }
         );
-      } 
-      else {
+      } else {
         this.uploading = true;
 
         var Result = this.uploadrows.map((r, i) => ({ ...r, q: i + 1 }));

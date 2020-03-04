@@ -26,6 +26,7 @@ Route::prefix('v1')->middleware('cors')->group(function()
     {
         Route::post('/logout', 'AuthController@logout');
 
+        Route::get('/exam/{exam}', 'ExamController@view')->middleware('can:view,exam');
         Route::get('/exams', 'ExamController@index')->middleware('can:viewAny,App\Exam');
         Route::get('/exam_names', 'ExamController@names')->middleware('can:viewAny,App\Exam');
 
@@ -42,7 +43,7 @@ Route::prefix('v1')->middleware('cors')->group(function()
 
         //Update exam files (only an associate can do. Must be owner of the exam)
         Route::post('/exam/{exam}/update_files', 'ExamController@update_files')->middleware('can:update,exam');
-        
+
         //Upload Result
         Route::post('/exam/{exam}/upload_result', 'ExamController@upload_result')->middleware('can:uploadResult,exam');
 
@@ -72,5 +73,8 @@ Route::prefix('v1')->middleware('cors')->group(function()
         Route::get('/uploads', 'UploadController@index')->middleware('can:viewAny,App\Upload');
         Route::get('/upload/locations', 'UploadController@locations')->middleware('can:viewAny,App\Upload');
         Route::get('/upload/dates/{exam}', 'UploadController@dates')->middleware('can:viewAny,App\Upload');
+
+        //Camera snapshot upload
+        Route::post('/download/{download}/snapshot', 'DownloadController@snapshot')->middleware('can:uploadResult,exam');
     });
 });

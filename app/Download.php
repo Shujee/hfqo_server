@@ -40,4 +40,9 @@ class Download extends Model
     {
         return $this->Access->User();
     }
+    
+    public function Snapshots()
+    {
+        return $this->hasMany('App\Snapshot');
+    }
 }

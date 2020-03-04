@@ -152,6 +152,18 @@ export default new Vuex.Store({
                 });
         },
 
+        fetchExam(context, exam_id) {
+           
+            return axios
+                .get('exam/' + exam_id)
+                .then(response => {
+                    return response.data;
+                })
+                .catch(() => {
+                    return null;
+                });
+        },
+
         deleteExam(context, id) {
             if (context.getters.loggedIn) {               
                 return axios
