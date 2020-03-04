@@ -102,9 +102,6 @@ class DownloadPolicy
     {
         if($user->trashed())
             return false;
-
-        if($download->trashed())
-            return false;
         else
             return $user->isAdmin() || $download->User->id == $user->id;
     }
