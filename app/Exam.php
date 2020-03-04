@@ -93,7 +93,7 @@ class Exam extends Model
     }
 
     /**
-     * Returns true if an Access row exists for this Exam and the specified user.
+     * Returns true if an Access row exists for this Exam and the specified user for the current date.
      *
      * @param [type] $user_id
      * @return void
@@ -104,5 +104,17 @@ class Exam extends Model
             where('exam_id', $this->id)->
             where('start', '<=', now())->
             where('end', '>=', now())->exists();
+    }
+
+    /**
+     * Returns true if an Access row exists for this Exam and the specified user.
+     *
+     * @param [type] $user_id
+     * @return void
+     */
+    public function AccessExists($user_id) {
+        return $this->Accesses()->
+            where('user_id', $user_id)->
+            where('exam_id', $this->id)->exists();
     }
 }

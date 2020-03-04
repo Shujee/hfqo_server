@@ -118,6 +118,6 @@ class ExamPolicy
         if($exam->trashed())
             return false;
         else
-            return $user->isAdmin() || $exam->ValidAccessExists($user->id);
+            return $user->isAdmin() || $exam->AccessExists($user->id);
     }
 }
