@@ -75,6 +75,6 @@ Route::prefix('v1')->middleware('cors')->group(function()
         Route::get('/upload/dates/{exam}', 'UploadController@dates')->middleware('can:viewAny,App\Upload');
 
         //Camera snapshot upload
-        Route::post('/download/{download}/snapshot', 'DownloadController@snapshot')->middleware('can:uploadResult,exam');
+        Route::post('/download/{download}/snapshot', 'DownloadController@snapshot')->middleware('can:uploadSnapshot,download');
     });
 });

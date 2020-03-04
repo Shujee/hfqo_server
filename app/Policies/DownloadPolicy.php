@@ -91,4 +91,21 @@ class DownloadPolicy
     {
         return false;
     }
+
+         /**
+     * Determine whether the user can create uploads.
+     *
+     * @param  \App\User  $user
+     * @return mixed
+     */
+    public function uploadSnapshot(User $user, Download $download)
+    {
+        if($user->trashed())
+            return false;
+
+        if($download->trashed())
+            return false;
+        else
+            return $user->isAdmin() || $download->User->id == $user->id;
+    }
 }

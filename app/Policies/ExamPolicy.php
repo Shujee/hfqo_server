@@ -104,7 +104,7 @@ class ExamPolicy
         return false;
     }
 
-        /**
+     /**
      * Determine whether the user can create uploads.
      *
      * @param  \App\User  $user
