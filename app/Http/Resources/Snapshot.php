@@ -17,7 +17,7 @@ class Snapshot extends JsonResource
     {
         return [
             'timestamp' => $this->timestamp,
-            'filename' => env('APP_URL') . '/storage/snapshots/' . $this->filename,
+            'filename' => env('APP_URL') . '/storage/' . $this->filename,
         ];
     }
 }
