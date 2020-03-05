@@ -1,12 +1,13 @@
 <template>
   <v-card flat class="ma-4">
       <v-card-text class="overflow-hidden py-0">
-        <v-layout class="justify-start align-start text-left" row v-vuse-scrollbar:x>
-          <v-flex class="justify-start"
+        <v-layout class="justify-start align-center" row v-vuse-scrollbar:x>
+          <v-flex 
             v-for="media in images"
             :key="media.filename"
             px-5
             pb-2
+            class="flex-0"
           >
             <v-row class="justify-center">
               <img :src="media.filename" height="70px" width="auto">
