@@ -14,7 +14,7 @@ class SmallTests extends TestCase
     {
         $faker = new Faker;
         
-        fwrite(STDERR, app_path('snapshots'));
+        fwrite(STDERR, storage_path());
         $this->assertTrue(true);
     }
 }
