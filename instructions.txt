@@ -19,7 +19,7 @@
 9.  Restart Apache server from XAMPP Control Panel
 10. Type http://lado.dov in browser to make sure that Laravel site is up and running
 11. Open .env and set the following:
-    APP_URL=http://lado.dov
+    APP_URL=http://hfq:8080
     DB_DATABASE=lado
     DB_USERNAME=root
     DB_PASSWORD=root

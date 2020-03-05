@@ -90,7 +90,7 @@ class DownloadController extends Controller
         $sn = new \App\Snapshot();
 
         $sn->download_id = $download->id;
-        $sn->filename = $request->file('image_file')->store(storage_path('snapshots'));
+        $sn->filename = $request->file('image_file')->store('snapshots');
         $sn->timestamp = $request->timestamp;
 
         $sn->save();
