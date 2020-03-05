@@ -18,6 +18,7 @@ class Download extends JsonResource
         $E = $this->Access->Exam;
 
         return [
+            'id' => $this->id,
             'user_name' => $U == null ? '' : $U->name,
             'user_email' => $U == null ? '' : $U->email,
             'exam_name' => $E == null ? '' : $E->name,

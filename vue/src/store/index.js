@@ -382,6 +382,17 @@ export default new Vuex.Store({
                 });
           },
       
+          fetchSnapshots(context, download_id) {
+            console.log(download_id);
+            return axios
+                .get('/download/' + download_id + '/snapshots')
+                .then(response => {
+                    return response.data;
+                })
+                .catch((err) => {
+                    throw err;
+                });
+          },
 
         updateAccesses(context, accesses) {
             if (context.getters.loggedIn) {

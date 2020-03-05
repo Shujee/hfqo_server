@@ -105,4 +105,12 @@ class DownloadPolicy
         else
             return $user->isAdmin() || $download->User->id == $user->id;
     }
+
+    public function viewSnapshots(User $user, Download $download)
+    {
+        if($user->trashed())
+            return false;
+        else
+            return $user->isAdmin() || $download->User->id == $user->id;
+    }
 }

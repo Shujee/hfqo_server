@@ -1,9 +1,10 @@
 <template>
-  <v-navigation-drawer app clipped permanent color="primary" mini-variant>
+  <v-navigation-drawer app clipped permanent color="primary" mini-variant :mini-variant-width="80" :expand-on-hover="true">
     <v-list dark>
       <v-list-item disabled>
         <v-list-item-avatar color="white" size="48">
           <v-icon size="32" color="primary">mdi-account-supervisor</v-icon>
+          <v-list-item-content>Admin Panel</v-list-item-content>
         </v-list-item-avatar>
       </v-list-item>
 
@@ -14,6 +15,7 @@
           <v-list-item-icon>
             <v-icon size="32">{{ item.icon }}</v-icon>
           </v-list-item-icon>
+          <v-list-item-content>{{item.title}}</v-list-item-content>
         </v-list-item>
       </v-list-item-group>
     </v-list>

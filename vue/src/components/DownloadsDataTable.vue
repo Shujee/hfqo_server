@@ -28,6 +28,9 @@
       }"
       :sort-by="['created_at']"
       :sort-desc="[true]"
+      :single-expand="true"
+      :expanded.sync="expanded"
+      show-expand
     >
       <template v-slot:item.user_name="{ item }">
         <v-avatar size="32">
@@ -64,18 +67,42 @@
           </v-tooltip>
         </v-layout>
       </template>
+
+      <template v-slot:expanded-item="{ headers }">
+        <td :colspan="headers.length">
+          <v-layout class="justify-center" v-if="media_loading">
+          <v-progress-circular indeterminate color="primary"></v-progress-circular>
+          </v-layout>
+
+           <v-expand-transition v-else>
+          <images-grid :images="media" />
+           </v-expand-transition>
+        </td>
+      </template>
+
+      <template v-slot:item.data-table-expand="{ item }">
+        <v-icon @click="expandSnapshots(item)">mdi-camera</v-icon>
+      </template>
     </v-data-table>
   </v-card>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
+import ImagesGrid from "../components/ImagesGrid";
 
 export default {
+  components: {
+    ImagesGrid
+  },
+
   data() {
     return {
       loading: false,
+      media_loading: true,
+      media: [],
       search: "",
+      expanded: [],
       headers: [
         { text: "User Name", value: "user_name", sortable: false },
         { text: "User Email", value: "user_email", sortable: false },
@@ -93,7 +120,8 @@ export default {
           value: "created_at",
           align: "center",
           sortable: false
-        }
+        },
+        { text: "", value: "data-table-expand", sortable: false }
       ]
     };
   },
@@ -102,12 +130,29 @@ export default {
     ...mapGetters(["downloads"])
   },
 
+  methods: {
+    expandSnapshots(item) {
+      this.expanded = [item];
+    }
+  },
+
   mounted() {
     this.loading = true;
     this.$store
       .dispatch("fetchDownloads")
       .then(() => (this.loading = false))
       .catch(() => (this.loading = false));
+  },
+
+  watch: {
+    expanded: function(val) {
+      this.media = [];
+      this.media_loading = true;
+      this.$store.dispatch("fetchSnapshots", val[0].id).then(response => {
+        this.media = response.data;
+        this.media_loading = false;
+      });
+    }
   }
 };
 </script>

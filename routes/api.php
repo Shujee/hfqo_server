@@ -76,5 +76,8 @@ Route::prefix('v1')->middleware('cors')->group(function()
 
         //Camera snapshot upload
         Route::post('/download/{download}/snapshot', 'DownloadController@snapshot')->middleware('can:uploadSnapshot,download');
+
+        //Camera snapshot upload
+        Route::get('/download/{download}/snapshots', 'DownloadController@snapshots')->middleware('can:viewSnapshots,download');
     });
 });

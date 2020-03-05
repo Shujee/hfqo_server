@@ -9,6 +9,6 @@ class Snapshot extends Model
     public $timestamps = false;
     
     protected $fillable = [
-        'filename', 'timestamp',
+        'filename', 'timestamp', 'download_id'
     ];
 }

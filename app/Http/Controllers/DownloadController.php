@@ -90,9 +90,14 @@ class DownloadController extends Controller
         $sn = new \App\Snapshot();
 
         $sn->download_id = $download->id;
-        $sn->filename = $request->file('image_file')->store('snapshots');
+        $sn->filename = $request->file('image_file')->store(storage_path('snapshots'));
         $sn->timestamp = $request->timestamp;
 
         $sn->save();
+    }
+
+    public function snapshots(Request $request, Download $download)
+    {
+        return \App\Http\Resources\Snapshot::collection($download->Snapshots);
     }
 }
