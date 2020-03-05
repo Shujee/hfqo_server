@@ -36,6 +36,8 @@
 SSH connection to hfqserver production server
 ssh u154749831@46.17.175.43 -p 65002 -i "F:\Hosting\Hostinger\hfqserver.com private key SSH.ppk"
 
+Create symbolic link (run in root Laravel folder):
+ln -s storage/app/snapshots public/snapshots
 ===========================================================================================================================================================================
 HANDY QUERIES
 -------------
