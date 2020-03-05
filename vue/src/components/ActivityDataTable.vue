@@ -19,7 +19,12 @@
     </template>
 
     <template v-slot:item.action="{ item }">
-      <v-chip outlined class="my-2" :color="type2color(item.type)" :text-color="type2color(item.type)">
+      <v-chip
+        outlined
+        class="my-2"
+        :color="type2color(item.type)"
+        :text-color="type2color(item.type)"
+      >
         <v-avatar left>
           <v-icon>{{ type2icon(item.type) }}</v-icon>
         </v-avatar>
@@ -43,7 +48,7 @@ export default {
   props: {
     activities: Array,
     userName: String,
-    userType: Number,
+    userType: Number
   },
   data() {
     return {
@@ -64,7 +69,7 @@ export default {
         {
           text: "City",
           value: "city",
-          visible: false,
+          visible: false
         },
         {
           text: "Country",
@@ -73,7 +78,7 @@ export default {
         {
           text: "Action",
           value: "action",
-          align: 'center',
+          align: "center"
         },
         {
           text: "Activity Date",
@@ -85,20 +90,19 @@ export default {
     };
   },
   computed: {
-   computedHeaders () {
-     if(this.userType == 2) //do not show ip, country and city columns for uploader
-     {
-       var cols =this.headers.filter(e => e.value !== 'ip' && e.value !== 'country' && e.value !== 'city') ;
-       console.log(cols);
-      return cols;
-     }
-     //vm.$recompute('key'
-    else
-    {
-      console.log("all of them" + this.userType);
-      return this.headers;
+    computedHeaders() {
+      if (this.userType == 2) {
+        //do not show ip, country and city columns for uploader
+        var cols = this.headers.filter(
+          e => e.value !== "ip" && e.value !== "country" && e.value !== "city"
+        );
+        return cols;
+      }
+      //vm.$recompute('key'
+      else {
+        return this.headers;
+      }
     }
-   }
   },
   methods: {
     type2color: function(type) {
@@ -119,9 +123,7 @@ export default {
   },
 
   watch: {
-    userType: {
-
-    }
-  },
+    userType: {}
+  }
 };
 </script>

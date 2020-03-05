@@ -188,7 +188,6 @@ export default {
 
   methods: {
     FetchExamMetaData: function() {
-      console.log('FetchExamMetaData');
       if (this.exam != null) {
         this.fetchingExam = true;
         this.$store.dispatch("fetchExam", this.exam).then(response => {
