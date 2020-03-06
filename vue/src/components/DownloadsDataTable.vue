@@ -132,6 +132,9 @@ export default {
 
   methods: {
     expandSnapshots(item) {
+      if(this.expanded[0]=== item)
+      this.expanded = [];
+      else
       this.expanded = [item];
     }
   },
@@ -146,6 +149,7 @@ export default {
 
   watch: {
     expanded: function(val) {
+      console.log("expanded");
       this.media = [];
       this.media_loading = true;
       this.$store.dispatch("fetchSnapshots", val[0].id).then(response => {
