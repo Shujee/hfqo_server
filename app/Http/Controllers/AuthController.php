@@ -26,7 +26,14 @@ class AuthController extends Controller
 
         try
         {
-            //get token first
+
+Log::info("login_endpoint:" . config('services.passport.login_endpoint'));
+Log::info("client_id:" . config('services.passport.client_id'));
+Log::info("client_secret:" . config('services.passport.client_secret'));
+Log::info("username:" . $request->email);
+Log::info("password:" . $request->password);
+
+//get token first
             $response = $http->post(config('services.passport.login_endpoint'), [
                 'form_params' => [
                     'grant_type' => 'password',
@@ -37,7 +44,11 @@ class AuthController extends Controller
                 ]
             ]);
 
+            Log::info("response:" . $response->getBody()->getContents());
+
             $Token = json_decode($response->getBody()->getContents(), true);
+
+            Log::info("Token:" . $Token);
 
             $credentials = $request->only('email', 'password');
             $U = null;
