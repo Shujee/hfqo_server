@@ -14,3 +14,13 @@ yarn-error.log
 !/vendor/**/
 !/vendor/laravel/framework/src/Illuminate/Http/Request.php
 vendor/sebastian/diff/tests/fixtures/out/
+
+**/app.*.js
+*/**/app.*.js.map
+*/**/app.*.css
+*/**/chunk-vendors.*.css
+*/**/chunk-vendors.*.js
+*/**/chunk-vendors.*.js.map
+/public/fonts/materialdesignicons*.*
+/storage/app/snapshots/*.jpeg
+/public/snapshots/*.jpeg

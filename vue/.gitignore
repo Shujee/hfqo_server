@@ -19,3 +19,8 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+
+**/app.*.js
+*/**/app.*.js.map
+*/**/app.*.css
+*/**/chunk-vendors.*.css

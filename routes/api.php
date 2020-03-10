@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::prefix('v1')->middleware('cors')->group(function()
+Route::prefix('v1')->group(function()
 {
     if(env('APP_DEBUG')) {
         Route::options('/{any?}', function() {})->where('any', '.*');

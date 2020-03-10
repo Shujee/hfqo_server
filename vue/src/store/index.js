@@ -4,7 +4,7 @@ import axios from "axios";
 
 //Automatically adds bearer token to all axios requests
 axios.default.interceptors.request.use(function (config) {
-    config.baseURL = process.env.VUE_APP_API_ENDPOINT;
+    config.baseURL = (process.env.NODE_ENV !== 'production') ? 'http://hfq:8080/api/v1' : 'https://hfqserver.com/api/v1'
     const token = localStorage.getItem('token');
     config.headers.Authorization =  token ? `Bearer ${token}` : '';
     return config;

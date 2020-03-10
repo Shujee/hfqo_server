@@ -1,8 +1,7 @@
 <template>
   <v-card class="ma-0 pa-0">
     <v-card-title class="ma-0 py-1">
-      <v-icon class="mr-2">mdi-download</v-icon>
-      Downloads
+      <v-icon class="mr-2">mdi-download</v-icon>Downloads
       <v-spacer></v-spacer>
       <v-text-field
         v-model="search"
@@ -71,12 +70,12 @@
       <template v-slot:expanded-item="{ headers }">
         <td :colspan="headers.length">
           <v-layout class="justify-center" v-if="media_loading">
-          <v-progress-circular indeterminate color="primary"></v-progress-circular>
+            <v-progress-circular indeterminate color="primary"></v-progress-circular>
           </v-layout>
 
-           <v-expand-transition v-else>
-          <images-grid :images="media" />
-           </v-expand-transition>
+          <v-expand-transition v-else>
+            <images-grid :images="media" />
+          </v-expand-transition>
         </td>
       </template>
 
@@ -132,11 +131,9 @@ export default {
 
   methods: {
     expandSnapshots(item) {
-      if(this.expanded[0]=== item)
-      this.expanded = [];
-      else
-      this.expanded = [item];
-    }
+      if (this.expanded[0] === item) this.expanded = [];
+      else this.expanded = [item];
+    },
   },
 
   mounted() {
@@ -153,7 +150,9 @@ export default {
       this.media = [];
       this.media_loading = true;
       this.$store.dispatch("fetchSnapshots", val[0].id).then(response => {
-        this.media = response.data;
+        this.media = response.data.map(img => {
+          return { name: img.filename, thumb: img.thumb_filename, alt: img.timestamp };
+        });
         this.media_loading = false;
       });
     }

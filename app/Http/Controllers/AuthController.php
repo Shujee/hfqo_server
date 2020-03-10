@@ -85,7 +85,7 @@ class AuthController extends Controller
     public function gitversion() { 
         $MAJOR = 1;
         $MINOR = 6;
-        $PATCH = 0;
+        $PATCH = 2;
     
         $commitHash = trim(exec('git log --pretty="%h" -n1 HEAD'));
 

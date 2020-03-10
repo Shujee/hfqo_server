@@ -18,6 +18,7 @@ class Snapshot extends JsonResource
         return [
             'timestamp' => $this->timestamp,
             'filename' => env('APP_URL') . '/' . $this->filename,
+            'thumb_filename' => env('APP_URL') . '/' . $this->thumb_filename,
         ];
     }
 }

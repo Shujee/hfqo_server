@@ -15,19 +15,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('snapshots/{filename}', function ($filename)
-{
-    $path = storage_path() . '/app/snapshots/' . $filename;
-
-    if(!File::exists($path)) abort(404);
-
-    $file = File::get($path);
-    $type = File::mimeType($path);
-
-    $response = Response::make($file, 200);
-    $response->header("Content-Type", $type);
-
-    return $response;
-});
-
-Route::get('/{any}', 'SPAController@handleAny')->where('any', '(?!snapshots/).*');
+Route::get('/{any}', 'SPAController@handleAny')->where('any', '.*');

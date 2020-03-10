@@ -36,8 +36,9 @@
 SSH connection to hfqserver production server
 ssh u154749831@46.17.175.43 -p 65002 -i "F:\Hosting\Hostinger\hfqserver.com private key SSH.ppk"
 
-Create symbolic link (run in public_html folder):
+Create symbolic link (run in public_html folder, path should be relative to the current directory):
 ln -s /public_html/HFQ/storage/app/snapshots
+ln -s ../storage/app/snapshots
 ===========================================================================================================================================================================
 HANDY QUERIES
 -------------
