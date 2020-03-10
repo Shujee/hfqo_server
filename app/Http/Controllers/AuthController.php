@@ -48,6 +48,8 @@ Log::info("password:" . $request->password);
 
             $Token = json_decode($response->getBody()->getContents(), true);
 
+            Log::info('LAST ERR: ' . json_last_error() );
+
             Log::info("Token:" . $Token['access_token']);
 
             $credentials = $request->only('email', 'password');
