@@ -95,10 +95,8 @@ class DownloadController extends Controller
         $sn->timestamp = $request->timestamp;
 
         //create a thumb and save
-        $dirname = pathinfo($sn->filename, PATHINFO_DIRNAME);
         $filename = pathinfo($sn->filename, PATHINFO_FILENAME);
         $extension = pathinfo($sn->filename, PATHINFO_EXTENSION);
-
 
         $img = Image::make(request()->file('image_file')->getRealPath());
         $img->resize(null, 100, function ($constraint) {
@@ -108,10 +106,6 @@ class DownloadController extends Controller
         $thumb = storage_path('app/snapshots') . '/' . $filename . "_thumb." . $extension;
 
         $img->save($thumb);
-
-        // $thumb = Image::make($request->file('image_file')->getRealPath())->resize(100, 100,function ($constraint) {
-        //     $constraint->aspectRatio();
-        // })->save('app/snapshots/' . $filename . "_thumb." . $extension);
 
         $sn->thumb_filename = 'snapshots' . '/' . $filename . "_thumb." . $extension;
 

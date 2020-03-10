@@ -146,7 +146,6 @@ export default {
 
   watch: {
     expanded: function(val) {
-      console.log("expanded");
       this.media = [];
       this.media_loading = true;
       this.$store.dispatch("fetchSnapshots", val[0].id).then(response => {

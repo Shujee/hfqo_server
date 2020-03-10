@@ -383,7 +383,6 @@ export default new Vuex.Store({
           },
       
           fetchSnapshots(context, download_id) {
-            console.log(download_id);
             return axios
                 .get('/download/' + download_id + '/snapshots')
                 .then(response => {
