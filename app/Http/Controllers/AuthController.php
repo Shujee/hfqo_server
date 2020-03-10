@@ -44,9 +44,10 @@ Log::info("password:" . $request->password);
                 ]
             ]);
 
-            Log::info("response:" . $response->getBody()->getContents());
+            $res = $response->getBody()->getContents();
+            Log::info("response:" . $res);
 
-            $Token = json_decode((string) $response->getBody(), true);
+            $Token = json_decode($res, true);
 
             Log::info('LAST ERR: ' . json_last_error() );
 
