@@ -46,7 +46,7 @@ Log::info("password:" . $request->password);
 
             Log::info("response:" . $response->getBody()->getContents());
 
-            $Token = json_decode($response->getBody()->getContents(), true);
+            $Token = json_decode((string) $response->getBody(), true);
 
             Log::info('LAST ERR: ' . json_last_error() );
 
