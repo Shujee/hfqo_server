@@ -26,13 +26,6 @@ class AuthController extends Controller
 
         try
         {
-
-Log::info("login_endpoint:" . config('services.passport.login_endpoint'));
-Log::info("client_id:" . config('services.passport.client_id'));
-Log::info("client_secret:" . config('services.passport.client_secret'));
-Log::info("username:" . $request->email);
-Log::info("password:" . $request->password);
-
 //get token first
             $response = $http->post(config('services.passport.login_endpoint'), [
                 'form_params' => [
@@ -45,22 +38,13 @@ Log::info("password:" . $request->password);
             ]);
 
             $res = $response->getBody()->getContents();
-            Log::info("response:" . $res);
-
             $Token = json_decode($res, true);
-
-            Log::info('LAST ERR: ' . json_last_error() );
-
-            Log::info("Token:" . $Token['access_token']);
 
             $credentials = $request->only('email', 'password');
             $U = null;
             if(Auth::once($credentials)) {
                 $U = Auth::getUser();
                 $IP = $request->getIp();
-
-                Log::info("U:" . $U->name);
-                Log::info("IP:" . $IP);
 
                 try {
                     (new SlackAgent())->notify(new UserLogin($U->name, $IP));
@@ -70,8 +54,6 @@ Log::info("password:" . $request->password);
                 }
             }
 
-            Log::info("Done");
-
             return [
                 'name' => $U->name,
                 'type' => $U->type,
@@ -80,8 +62,6 @@ Log::info("password:" . $request->password);
         }
         catch(Exception $e)
         {
-            Log::info("In Catch");
-
             if($e->getCode() == 401)
                 return response()->json([
                                             'error' => 'Invalid credentials', 
