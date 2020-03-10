@@ -48,13 +48,16 @@ Log::info("password:" . $request->password);
 
             $Token = json_decode($response->getBody()->getContents(), true);
 
-            Log::info("Token:" . $Token);
+            Log::info("Token:" . $Token['access_token']);
 
             $credentials = $request->only('email', 'password');
             $U = null;
             if(Auth::once($credentials)) {
                 $U = Auth::getUser();
                 $IP = $request->getIp();
+
+                Log::info("U:" . $U->name);
+                Log::info("IP:" . $IP);
 
                 try {
                     (new SlackAgent())->notify(new UserLogin($U->name, $IP));
@@ -64,6 +67,8 @@ Log::info("password:" . $request->password);
                 }
             }
 
+            Log::info("Done");
+
             return [
                 'name' => $U->name,
                 'type' => $U->type,
@@ -72,6 +77,8 @@ Log::info("password:" . $request->password);
         }
         catch(Exception $e)
         {
+            Log::info("In Catch");
+
             if($e->getCode() == 401)
                 return response()->json([
                                             'error' => 'Invalid credentials', 
