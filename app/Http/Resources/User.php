@@ -43,4 +43,4 @@ class User extends JsonResource
             'activity' => $activity,
         ];
     }
-}
+} //nothing
