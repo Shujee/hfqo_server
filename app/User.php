@@ -97,11 +97,10 @@ class User extends Authenticatable
      */
     public function DownloadedExams()
     {
-        return \App\Download::
-                join('accesses', 'downloads.access_id', '=', 'accesses.id')->
+        return \App\Download::join('accesses', 'downloads.access_id', '=', 'accesses.id')->
                 join('exams', 'accesses.exam_id', '=', 'exams.id')->
                 where('accesses.user_id', $this->id)->
-                selectRaw('exams.id,exams.number,exams.name,exams.qa_count,downloads.ip,downloads.city,downloads.country,downloads.updated_at,\'D\' as type')->
+                selectRaw('CONCAT("D", downloads.id) as id,exams.number,exams.name,exams.qa_count,downloads.ip,downloads.city,downloads.country,downloads.updated_at,\'D\' as type')->
                 get();
     }
     
@@ -112,11 +111,10 @@ class User extends Authenticatable
      */
     public function UploadedResults()
     {
-        return \App\Upload::
-                join('accesses', 'uploads.access_id', '=', 'accesses.id')->
+        return \App\Upload::join('accesses', 'uploads.access_id', '=', 'accesses.id')->
                 join('exams', 'accesses.exam_id', '=', 'exams.id')->
                 where('accesses.user_id', $this->id)->
-                selectRaw('exams.id,exams.number,exams.name,exams.qa_count,uploads.ip,uploads.city,uploads.country,uploads.updated_at,\'R\' as type')->
+                selectRaw('CONCAT("U", uploads.id) as id,exams.number,exams.name,exams.qa_count,uploads.ip,uploads.city,uploads.country,uploads.updated_at,\'R\' as type')->
                 get();
     }
 

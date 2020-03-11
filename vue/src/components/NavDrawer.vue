@@ -1,23 +1,19 @@
 <template>
   <v-navigation-drawer app clipped permanent color="primary" mini-variant :mini-variant-width="80" :expand-on-hover="true">
-    <v-list dark>
-      <v-list-item disabled>
-        <v-list-item-avatar color="white" size="48">
-          <v-icon size="32" color="primary">mdi-account-supervisor</v-icon>
-          <v-list-item-content>Admin Panel</v-list-item-content>
-        </v-list-item-avatar>
-      </v-list-item>
+    <v-list dark three-line>
+        <v-list-item v-for="item in items"
+          :key="item.title"
+          @click="emitClick(item)"
+        >
+          <v-list-item-avatar>
+            <v-icon size="32">{{item.icon}}</v-icon>
+          </v-list-item-avatar>
 
-      <v-divider color="white" class="mb-6"></v-divider>
-
-      <v-list-item-group>
-        <v-list-item v-for="(item, i) in items" :key="i" @click="emitClick(item)">
-          <v-list-item-icon>
-            <v-icon size="32">{{ item.icon }}</v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>{{item.title}}</v-list-item-content>
+          <v-list-item-content>
+            <v-list-item-title v-html="item.title"></v-list-item-title>
+            <v-list-item-subtitle v-html="item.subtitle"></v-list-item-subtitle>
+          </v-list-item-content>
         </v-list-item>
-      </v-list-item-group>
     </v-list>
   </v-navigation-drawer>
 </template>
@@ -30,7 +26,7 @@ export default {
       items: [
         {
           title: "Master Files",
-          subtitle: "Manage master documents",
+          subtitle: "Manage exams uploaded using Multi-DF",
           icon: "mdi-file-document",
           view: "exams"
         },
@@ -41,14 +37,14 @@ export default {
           view: "users"
         },
         {
-          title: "Downloads",
-          subtitle: "View downloads history",
+          title: "Downloads (HFQApp)",
+          subtitle: "Exams downloads by users through HFQApp",
           icon: "mdi-download",
           view: "downloads"
         },
         {
-          title: "Uploads",
-          subtitle: "View uploads history",
+          title: "Uploads (HFQApp)",
+          subtitle: "Results uploaded by users through HFQApp",
           icon: "mdi-upload",
           view: "uploads"
         },
@@ -60,7 +56,7 @@ export default {
         },
         {
           title: "Frequency Grid",
-          subtitle: "Manually submit QA indexes to update HFQ Report",
+          subtitle: "Manually enter QA indexes to update HFQ Report",
           icon: "mdi-grid",
           view: "frequencygrid"
         },

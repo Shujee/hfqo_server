@@ -24,12 +24,13 @@ class User extends JsonResource
         else if($this->type == \App\User::USERTYPE_DOWNLOADER)
         {
             //Fetch exams downloaded by this user
-            $activity1 = $this->DownloadedExams();
+            $activity = $this->DownloadedExams();
 
             //Fetch results uploaded by this user
             $activity2 = $this->UploadedResults();
 
-            $activity = $activity1->merge($activity2);
+            foreach ($activity2 as $act2)
+                $activity->push($act2);
         }
 
         return [
