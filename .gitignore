@@ -17,3 +17,8 @@ vendor/sebastian/diff/tests/fixtures/out/
 
 /storage/app/snapshots/*.jpeg
 /public/snapshots/*.jpeg
+public/*.png
+public/*.svg
+public/browserconfig.xml
+public/site.webmanifest
+public/favicon.ico
