@@ -32,7 +32,7 @@ export default {
 
   data() {
     return {
-      view: "exams"
+      view: "downloads"
     };
   },
 

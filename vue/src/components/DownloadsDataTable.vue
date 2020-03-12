@@ -2,6 +2,9 @@
   <v-card class="ma-0 pa-0">
     <v-card-title class="ma-0 py-1">
       <v-icon class="mr-2">mdi-download</v-icon>Downloads
+      <v-btn icon color="primary" @click="fetchDownloads">
+        <v-icon>mdi-cached</v-icon>
+      </v-btn>
       <v-spacer></v-spacer>
       <v-text-field
         v-model="search"
@@ -134,14 +137,18 @@ export default {
       if (this.expanded[0] === item) this.expanded = [];
       else this.expanded = [item];
     },
+
+    fetchDownloads() {
+       this.$store
+      .dispatch("fetchDownloads")
+      .then(() => (this.loading = false))
+      .catch(() => (this.loading = false));
+    }
   },
 
   mounted() {
     this.loading = true;
-    this.$store
-      .dispatch("fetchDownloads")
-      .then(() => (this.loading = false))
-      .catch(() => (this.loading = false));
+    this.fetchDownloads();
   },
 
   watch: {
@@ -149,10 +156,14 @@ export default {
       this.media = [];
       this.media_loading = true;
 
-      if(val !== null && val[0] !== null) {
+      if (val !== null && val[0] !== null) {
         this.$store.dispatch("fetchSnapshots", val[0].id).then(response => {
           this.media = response.data.map(img => {
-            return { name: img.filename, thumb: img.thumb_filename, alt: img.timestamp };
+            return {
+              name: img.filename,
+              thumb: img.thumb_filename,
+              alt: img.timestamp
+            };
           });
           this.media_loading = false;
         });
