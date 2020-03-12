@@ -148,12 +148,15 @@ export default {
     expanded: function(val) {
       this.media = [];
       this.media_loading = true;
-      this.$store.dispatch("fetchSnapshots", val[0].id).then(response => {
-        this.media = response.data.map(img => {
-          return { name: img.filename, thumb: img.thumb_filename, alt: img.timestamp };
+
+      if(val !== null && val[0] !== null) {
+        this.$store.dispatch("fetchSnapshots", val[0].id).then(response => {
+          this.media = response.data.map(img => {
+            return { name: img.filename, thumb: img.thumb_filename, alt: img.timestamp };
+          });
+          this.media_loading = false;
         });
-        this.media_loading = false;
-      });
+      }
     }
   }
 };
