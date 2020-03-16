@@ -116,7 +116,7 @@ export default {
   computed: {
     ...mapGetters(["users"]),
     downloaders() {
-      return this.users.filter(e => e.type == 3);
+      return this.users.filter(e => e.type == 3).sort((a, b) => a.name.localeCompare(b.name));
     },
     show: {
       get() {
