@@ -196,6 +196,8 @@ class AccessController extends Controller
                         'xps'=> $xps64,
                         'xml'=> $xml64,
                         'download_id' => $DL->id,
+                        'number' => $exam->number,
+                        'name' => $exam->name,
                     ]);    
                 }
                 else {
