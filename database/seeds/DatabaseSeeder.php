@@ -28,9 +28,9 @@ class DatabaseSeeder extends Seeder
         $u1->save();
         $this->command->getOutput()->writeln("<info>Created admin</info>");
         
-        $this->call(App\UsersTableSeeder::class);
-        $this->call(App\ExamsTableSeeder::class);
-        $this->call(App\AccessesTableSeeder::class);
-        $this->call(App\DownloadsTableSeeder::class);
+        // $this->call(App\UsersTableSeeder::class);
+        // $this->call(App\ExamsTableSeeder::class);
+        // $this->call(App\AccessesTableSeeder::class);
+        // $this->call(App\DownloadsTableSeeder::class);
     }
 }
