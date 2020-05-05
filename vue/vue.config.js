@@ -7,7 +7,7 @@ module.exports = {
         proxy:
             process.env.NODE_ENV === "production"
                 ? "https://hfqserver.com/api/v1"
-                : "http://hfq:8080/api/v1"
+                : "http://hfq/api/v1"
     },
 
     outputDir: "../public",

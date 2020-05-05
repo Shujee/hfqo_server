@@ -41,7 +41,7 @@
       :sort-desc="[true]"
     >
       <template v-slot:expanded-item="{ item }">
-        <td :colspan="headers.length + 1" v-if="item.activity.length > 0">
+        <td :colspan="headers.length + 1" v-if="item.activity && item.activity.length > 0">
           <v-card flat class="my-1">
             <v-card-text>
               <activity-data-table :userName="item.name" :userType="item.type" :activities="item.activity" />
