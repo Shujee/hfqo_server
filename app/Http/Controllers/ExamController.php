@@ -64,12 +64,6 @@ class ExamController extends Controller
     public function store(Request $request)
     {
         Log::alert("{$request->user()->name}  (id={$request->user()->id}) tried to upload a new master file.");
-        if (!$request->user()->isUploader()) {
-
-            return response()->json([
-                'error' => 'Not allowed.'
-            ], 403);
-        }
 
         $request->validate(
             [
