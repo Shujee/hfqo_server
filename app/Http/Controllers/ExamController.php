@@ -41,7 +41,7 @@ class ExamController extends Controller
 
     public function number_exists($number) 
     {
-        $Exists = \App\Exam::where('number', $number)->exists();
+        $Exists = \App\Exam::withTrashed()->where('number', $number)->exists();
         return $Exists? "true" : "false";
     }
 
