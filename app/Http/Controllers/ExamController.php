@@ -41,7 +41,7 @@ class ExamController extends Controller
 
     public function number_exists($number) 
     {
-        $Exists = \App\Exam::withTrashed()->where('number', $number)->exists();
+        $Exists = \App\Exam::where('number', $number)->exists();
         return $Exists? "true" : "false";
     }
 
@@ -67,7 +67,7 @@ class ExamController extends Controller
 
         $request->validate(
             [
-                'number' => 'required|unique:exams',
+                'number' => 'required|unique:exams,number,deleted_at,NULL',
                 'name' => 'required',
                 'qa_count' => 'required',
                 'xps_content' => 'file',
