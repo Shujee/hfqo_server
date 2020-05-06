@@ -67,7 +67,7 @@ class ExamController extends Controller
 
         $request->validate(
             [
-                'number' => 'required|unique:exams,deleted_at,NULL',
+                'number' => 'required|unique:exams,number,NULL,id,deleted_at,NULL',
                 'name' => 'required',
                 'qa_count' => 'required',
                 'xps_content' => 'file',
