@@ -93,7 +93,7 @@ class UserController extends Controller
 
         if($request['password'] !== null && $request['password'] !== "") {
 
-            Log::debug('password validating.');
+            Log::debug('password validating.' . $request['password'] . ',' . $request['password_confirmation']);
 
             $request->validate(
                 [
