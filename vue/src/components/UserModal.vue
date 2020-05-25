@@ -51,10 +51,10 @@
           ></v-text-field>
 
           <v-text-field
-            id="confirmPassword"
+            id="password_confirmation"
             label="Confirm Password"
-            name="confirmPassword"
-            v-model="local_user.confirmPassword"
+            name="password_confirmation"
+            v-model="local_user.password_confirmation"
             prepend-icon="mdi-lock"
             type="password"
             :rules="editMode? [rules.password, rules.confirm] : [rules.required, rules.password, rules.confirm]"
@@ -97,9 +97,9 @@ export default {
         name: null,
         email: null,
         password: null,
-        type: null
+        password_confirmation: null,
+        type: null,
       },
-      confirmPassword: null,
       usertypes: [
         {text: 'Admin', value: 1},
         {text: 'Associate', value: 2},
@@ -120,7 +120,7 @@ export default {
         },
         confirm: (v) => {
           if (this.editMode && (v == null || v == "")) return true;
-          this.local_user.password === this.local_user.confirmPassword ||
+          this.local_user.password === this.local_user.password_confirmation ||
           "Password and Confirm Password must match";
         }
       }
@@ -143,7 +143,7 @@ export default {
 
       if (val) {
         this.local_user = JSON.parse(JSON.stringify(this.user)); //create a copy
-        this.local_user.confirmPassword = this.user.password;
+        this.local_user.password_confirmation = this.user.password;
 
         requestAnimationFrame(() => {
           if (this.editMode) 

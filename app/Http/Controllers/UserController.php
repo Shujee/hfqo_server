@@ -9,6 +9,7 @@ use App\Http\Resources\User as UserResource;
 use App\Upload;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -88,24 +89,35 @@ class UserController extends Controller
         $user->name = $request['name'];
         $user->type = $request['type'];
 
+        Log::debug('Name or type updated.');
+
         if($request['password'] !== null && $request['password'] !== "") {
+
+            Log::debug('password validating.');
 
             $request->validate(
                 [
-                    'password' => 'required|min:6|max:15'
+                    'password' => 'required|confirmed|min:6|max:15'
                 ],
                 [
                     'password.required' => 'Password is required.',
+                    'password.confirmed' => 'Password and Confirm Password fields do not match.',
                     'password.min' => 'Password must be at least 6 characters long.',
                     'password.max' => 'Password cannot be longer than 15 characters.',
                 ]
-            );    
+            );   
+            
+            Log::debug('password validated.');
     
             
-            $user->password  = Hash::make($request['password']);  
+            Log::debug('Hashing password = ' . $request['password']);
+            $user->password  = Hash::make($request['password']);
         }
 
+        Log::debug('Saving user.');
         $user->save();
+
+        Log::debug('Saved.');
     }
 
     /**
