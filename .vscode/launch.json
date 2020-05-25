@@ -22,7 +22,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome",
-            "url": "http://hfq:8080/",
+            "url": "http://hfq/",
             "sourceMaps": true
         }
     ]
