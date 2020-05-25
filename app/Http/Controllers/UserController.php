@@ -6,10 +6,7 @@ use App\Http\Resources\AccessibleExam as AccessibleExamResource;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Resources\User as UserResource;
-use App\Upload;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -89,12 +86,7 @@ class UserController extends Controller
         $user->name = $request['name'];
         $user->type = $request['type'];
 
-        Log::debug('Name or type updated.');
-
         if($request['password'] !== null && $request['password'] !== "") {
-
-            Log::debug('password validating.' . $request['password'] . ',' . $request['password_confirmation']);
-
             $request->validate(
                 [
                     'password' => 'required|confirmed|min:6|max:15'
@@ -107,17 +99,10 @@ class UserController extends Controller
                 ]
             );   
             
-            Log::debug('password validated.');
-    
-            
-            Log::debug('Hashing password = ' . $request['password']);
             $user->password  = Hash::make($request['password']);
         }
 
-        Log::debug('Saving user.');
         $user->save();
-
-        Log::debug('Saved.');
     }
 
     /**

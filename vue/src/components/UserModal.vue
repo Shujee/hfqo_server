@@ -143,7 +143,10 @@ export default {
 
       if (val) {
         this.local_user = JSON.parse(JSON.stringify(this.user)); //create a copy
-        this.local_user.password_confirmation = this.user.password;
+
+        //password and confirm password fields should be empty by default (even in edit mode)
+        this.local_user.password = null;
+        this.local_user.password_confirmation = null;
 
         requestAnimationFrame(() => {
           if (this.editMode) 
