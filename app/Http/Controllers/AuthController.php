@@ -9,9 +9,12 @@ use Illuminate\Support\Facades\Validator;
 use Exception;
 use App\Notifications\UserLogin;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\RequestIP;
 
 class AuthController extends Controller
 {
+    use RequestIP;
+
     public function login(Request $request)
     {
         $request->validate([
@@ -44,7 +47,7 @@ class AuthController extends Controller
             $U = null;
             if(Auth::once($credentials)) {
                 $U = Auth::getUser();
-                $IP = $request->getIp();
+                $IP = $this->getIp();
 
                 try {
                     (new SlackAgent())->notify(new UserLogin($U->name, $IP));

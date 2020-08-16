@@ -14,8 +14,6 @@ use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
 class Request extends SymfonyRequest implements Arrayable, ArrayAccess
 {
-    use \App\Http\Controllers\RequestIP;
-
     use Concerns\InteractsWithContentTypes,
         Concerns\InteractsWithFlashData,
         Concerns\InteractsWithInput,
@@ -275,7 +273,7 @@ class Request extends SymfonyRequest implements Arrayable, ArrayAccess
      */
     public function ip()
     {
-        return $this->getIp();
+        return $this->getClientIp();
     }
 
     /**
@@ -514,7 +512,7 @@ class Request extends SymfonyRequest implements Arrayable, ArrayAccess
      * @param  string|null  $guard
      * @return mixed
      */
-    public function user($guard = null) : ?\App\User
+    public function user($guard = null)
     {
         return call_user_func($this->getUserResolver(), $guard);
     }

@@ -86,8 +86,12 @@ class UserController extends Controller
         $user->name = $request['name'];
         $user->type = $request['type'];
 
-        if($request['password'] !== null && $request['password'] !== "") {
-            $request->validate(
+        if(
+            $request['password'] !== null && 
+            $request['password'] !== "" && 
+            !Hash::check($request['password'], $user->password)) {
+            
+                $request->validate(
                 [
                     'password' => 'required|confirmed|min:6|max:15'
                 ],
@@ -97,7 +101,7 @@ class UserController extends Controller
                     'password.min' => 'Password must be at least 6 characters long.',
                     'password.max' => 'Password cannot be longer than 15 characters.',
                 ]
-            );   
+            );
             
             $user->password  = Hash::make($request['password']);
         }
