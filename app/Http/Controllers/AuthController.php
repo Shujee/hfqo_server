@@ -90,7 +90,13 @@ class AuthController extends Controller
         $PATCH = 3;
 
         //$commitHash = trim(exec('git log --pretty="%h" -n1 HEAD'));
-        $commitHash = file_get_contents('../.git/refs/heads/master'); // or branch x
+        
+        //read last commit hash from master branch
+        $commitHash = file_get_contents('./HFQ/.git/refs/heads/master'); // or branch x
+        
+        //delimit short version (first 7 chars) of hash in square brackets
+        $commitHash = substr_replace($commitHash, ']', 7, 0);
+        $commitHash = substr_replace($commitHash, '[', 0, 0);
         
         $commitDate = new \DateTime(trim(exec('git log -n1 --pretty=%ci HEAD')));
         $commitDate->setTimezone(new \DateTimeZone('UTC'));
