@@ -10,6 +10,7 @@ use Exception;
 use App\Notifications\UserLogin;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\RequestIP;
+use App\Notifications\GenericException;
 
 class AuthController extends Controller
 {
@@ -49,12 +50,7 @@ class AuthController extends Controller
                 $U = Auth::getUser();
                 $IP = $this->getIp();
 
-                try {
-                    (new SlackAgent())->notify(new UserLogin($U->name, $IP));
-                }
-                catch(Exception $e) {
-                    Log::alert("Slack notification failed [USER LOGGED IN]. {$e->getMessage()}. User: {$U->name}");
-                }
+                (new SlackAgent())->notify(new UserLogin($U->name, $IP));
             }
 
             return [
@@ -65,6 +61,8 @@ class AuthController extends Controller
         }
         catch(Exception $e)
         {
+            (new SlackAgent())->notify(new GenericException($IP, $U, $e));
+
             if($e->getCode() == 401)
                 return response()->json([
                                             'error' => 'Invalid credentials', 

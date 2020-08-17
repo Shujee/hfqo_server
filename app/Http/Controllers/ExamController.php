@@ -8,6 +8,7 @@ use App\Http\Resources\Exam as ExamResource;
 use App\Http\Resources\Access as AccessResource;
 use App\Http\Resources\NewlyCreatedExam;
 use App\Notifications\ExamUploaded;
+use App\Notifications\GenericException;
 use Illuminate\Support\Facades\Log;
 use App\Notifications\ResultUploaded;
 use Carbon\Carbon;
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\DB;
 class ExamController extends Controller
 {
     use RequestIP;
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -39,7 +40,7 @@ class ExamController extends Controller
         return \App\Exam::selectRaw("CONCAT(`number`, ' (', `name`, ')') as name, id")->get();
     }
 
-    public function number_exists($number) 
+    public function number_exists($number)
     {
         $Exists = \App\Exam::where('number', $number)->exists();
         return $Exists? "true" : "false";
@@ -87,39 +88,38 @@ class ExamController extends Controller
             ]
         );
 
-        $Exam = new \App\Exam;
-
-        $Exam->uploader_id = $request->user()->id;
-
-        $Exam->is_expired = false;
-        $Exam->number = $request['number'];
-        $Exam->name = $request['name'];
-        $Exam->qa_count = $request['qa_count'];
-        $Exam->remarks = 'NEW';
-        $Exam->origfilename = $request['origfilename'];
-
-        $Exam->xps_file_name = $request->file('xps_content')->store('xps');
-        $Exam->xml_file_name = $request->file('xml_content')->store('xml');
-
-        $Exam->save();
-
-        $qas = json_decode($request['qas'], true);
-
-        //insert all result rows in UploadRow table
-        foreach ($qas as $qa) {
-            $Q = \App\QA::make($qa);
-            $Q['exam_id'] = $Exam->id;
-            $Q->save();
-        }
-
         try {
-            (new SlackAgent())->notify(new ExamUploaded($Exam, true));
-        }
-        catch(Exception $e) {
-            Log::alert("Slack notification failed [EXAM UPLOADED]. {$e->getMessage()}, User: {$request->user()->name}, Exam: {$Exam->name}");
-        }
+            $Exam = new \App\Exam;
 
-        return new NewlyCreatedExam($Exam);
+            $Exam->uploader_id = $request->user()->id;
+
+            $Exam->is_expired = false;
+            $Exam->number = $request['number'];
+            $Exam->name = $request['name'];
+            $Exam->qa_count = $request['qa_count'];
+            $Exam->remarks = 'NEW';
+            $Exam->origfilename = $request['origfilename'];
+
+            $Exam->xps_file_name = $request->file('xps_content')->store('xps');
+            $Exam->xml_file_name = $request->file('xml_content')->store('xml');
+
+            $Exam->save();
+
+            $qas = json_decode($request['qas'], true);
+
+            //insert all result rows in UploadRow table
+            foreach ($qas as $qa) {
+                $Q = \App\QA::make($qa);
+                $Q['exam_id'] = $Exam->id;
+                $Q->save();
+            }
+
+            (new SlackAgent())->notify(new ExamUploaded($Exam, true));
+
+            return new NewlyCreatedExam($Exam);
+        } catch (Exception $e) {
+            (new SlackAgent())->notify(new GenericException(null, $request->user(), $e));
+        }
     }
 
     /**
@@ -160,33 +160,33 @@ class ExamController extends Controller
             $exam->remarks = $request['remarks'];
             $exam->origfilename = $request['origfilename'];
 
-            $exam->xps_file_name = $request->file('xps_content')->store('xps');
-            $exam->xml_file_name = $request->file('xml_content')->store('xml');
-
-            $exam->save();
-
-            $qas = json_decode($request['qas'], true);
-
-            //delete old QAs of this exam
-            $exam->QAs()->delete();
-
-            //insert new QAs
-            foreach ($qas as $qa) {
-                $qa['exam_id'] = $exam->id;
-                \App\QA::create($qa);    
-            }
-
             try {
+                $exam->xps_file_name = $request->file('xps_content')->store('xps');
+                $exam->xml_file_name = $request->file('xml_content')->store('xml');
+
+                $exam->save();
+
+                $qas = json_decode($request['qas'], true);
+
+                //delete old QAs of this exam
+                $exam->QAs()->delete();
+
+                //insert new QAs
+                foreach ($qas as $qa) {
+                    $qa['exam_id'] = $exam->id;
+                    \App\QA::create($qa);
+                }
+
                 (new SlackAgent())->notify(new ExamUploaded($exam, false));
+
+                return "true";
+            } catch (Exception $e) {
+                (new SlackAgent())->notify(new GenericException(null, $request->user(), $e));
+
+                return response()->json([
+                    'error' => 'A server-side error occurred while trying to update exam files.'
+                ], 500);
             }
-            catch(Exception $e) {
-                Log::alert("Slack notification failed [EXAM FILES UPDATED]. {$e->getMessage()}. User: {$request->user()->name}, Exam: {$exam->name}");
-            }
-
-            
-
-            return "true";
-
         } else {
             return response()->json([
                 'error' => 'Not allowed.'
@@ -194,7 +194,7 @@ class ExamController extends Controller
         }
     }
 
-        /**
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -217,13 +217,13 @@ class ExamController extends Controller
         }
 
         $request->validate([
-            'machine_name' => 'required',
-            'result' => 'required'
-        ],
-        [
-            'machine_name.required' => 'Machine name must be supplied.',
-            'result' => 'result is required'
-        ]);
+                'machine_name' => 'required',
+                'result' => 'required'
+            ],
+            [
+                'machine_name.required' => 'Machine name must be supplied.',
+                'result' => 'result is required'
+            ]);
 
         if($exam->trashed()){
             return response()->json([
@@ -232,74 +232,80 @@ class ExamController extends Controller
         }
         else {
 
-            //For admins, we'll create an Access row on the fly if one doesn't exist already for the specified exam
-            if($request->user()->isAdmin()) {
-                $MyAccess = $exam->GetFirstValidAccess($request->user()->id);
-                
-                if($MyAccess == null) {
-                    $MyAccess = new \App\Access;
-                    
-                    $MyAccess->user_id = $request->user()->id;
-                    $MyAccess->exam_id = $exam->id;
-                    $MyAccess->start = Carbon::now();
-                    $MyAccess->end = Carbon::now()->addDays(7);
+            try {
 
-                    $MyAccess->save();
+                $MyAccess = null;
+
+                //For admins, we'll create an Access row on the fly if one doesn't exist already for the specified exam
+                if($request->user()->isAdmin()) {
+                    $MyAccess = $exam->GetFirstValidAccess($request->user()->id);
+
+                    if($MyAccess == null) {
+                        $MyAccess = new \App\Access;
+
+                        $MyAccess->user_id = $request->user()->id;
+                        $MyAccess->exam_id = $exam->id;
+                        $MyAccess->start = Carbon::now();
+                        $MyAccess->end = Carbon::now()->addDays(7);
+
+                        $MyAccess->save();
+                    }
                 }
-            }
-            else {
-                //Locate the Access row for current User and Exam
-                $MyAccess = $exam->GetFirstValidAccess($request->user()->id);
-            }
-
-            if($MyAccess == null){
-                return response()->json([
-                    'error' => 'You do not have access to the specified master file.'
-                ], 422);    
-            }
-            else {
-                //record upload activity
-                $UL = new \App\Upload;
-                $UL->access_id = $MyAccess->id;
-                $UL->ip = $IP;
-
-                $Loc = $this->ip_2_city_country($IP);
-                $UL->city = $Loc['city'];
-                $UL->country = $Loc['country'];
-
-                $UL->machine_name = $request['machine_name'];
-                $UL->save();
-
-                $result = json_decode($request['result'], true);
-
-                //insert all result rows in UploadRow table
-                foreach ($result as $r) {
-                    $r['upload_id'] = $UL->id;
-                    
-                    if($r['a2'] == '')
-                        $r['a2'] = null;
-
-                    if($r['a3'] == '')
-                        $r['a3'] = null;
-
-                    \App\UploadRow::create($r);    
+                else {
+                    //Locate the Access row for current User and Exam
+                    $MyAccess = $exam->GetFirstValidAccess($request->user()->id);
                 }
 
-                try {
+                if($MyAccess == null){
+                    return response()->json([
+                        'error' => 'You do not have access to the specified master file.'
+                    ], 422);
+                }
+                else {
+                    //record upload activity
+                    $UL = new \App\Upload;
+                    $UL->access_id = $MyAccess->id;
+                    $UL->ip = $IP;
+
+                    $Loc = $this->ip_2_city_country($IP);
+                    $UL->city = $Loc['city'];
+                    $UL->country = $Loc['country'];
+
+                    $UL->machine_name = $request['machine_name'];
+                    $UL->save();
+
+                    $result = json_decode($request['result'], true);
+
+                    //insert all result rows in UploadRow table
+                    foreach ($result as $r) {
+                        $r['upload_id'] = $UL->id;
+
+                        if($r['a2'] == '')
+                            $r['a2'] = null;
+
+                        if($r['a3'] == '')
+                            $r['a3'] = null;
+
+                        \App\UploadRow::create($r);
+                    }
+
                     (new SlackAgent())->notify(new ResultUploaded($UL));
-                }
-                catch(Exception $e) {
-                    Log::alert("Slack notification failed [RESULT UPLOADED]. {$e->getMessage()}. User: {$request->user()->name}, Exam: {$exam->name}");
-                }               
 
-                return response()->json('success', 201);
+                    return response()->json('success', 201);
+                }
+            } catch (Exception $e) {
+                (new SlackAgent())->notify(new GenericException($IP, $request->user(), $e));
+
+                return response()->json([
+                    'error' => 'A server-side error occurred while trying to update exam files.'
+                ], 500);
             }
         }
     }
 
     public function hfqreport(Request $request)
-    {       
-       $Q = $this->hfqreport_query($request);
+    {
+        $Q = $this->hfqreport_query($request);
         return $Q->get();
     }
 
@@ -309,12 +315,12 @@ class ExamController extends Controller
 
         $data = $Q->get();
         $columns = array('Index', 'Question', 'Answer', 'Frequency');
-    
+
         $callback = function() use ($data, $columns)
         {
             $file = fopen('php://output', 'w');
             fputcsv($file, $columns);
-    
+
             foreach($data as $r) {
                 fputcsv($file, array($r->index, $r->question, $r->answer, $r->freq));
             }
@@ -328,36 +334,36 @@ class ExamController extends Controller
     private function hfqreport_query(Request $request)
     {
         $request->validate([
-            'exam' => 'required|exists:exams,id',
-            'start' => 'nullable|date',
-            'end' => 'nullable|date',
-            'frequency' => 'required|in:0,1,2,3'
-        ],
-        [
-            'exam.required' => 'Master File must be selected.',
-            'exam.exists' => 'Selected Master File does not exist on the server.',
-            'start.date' => 'Start Date format is not correct.',
-            'end.date' => 'End Date format is not correct.',
-            'frequency.required' => 'Select a Frequency value from the dropdown.',
-            'frequency.in' => 'Frequency value must be 0, 1, 2 or 3.',
-        ]);
+                'exam' => 'required|exists:exams,id',
+                'start' => 'nullable|date',
+                'end' => 'nullable|date',
+                'frequency' => 'required|in:0,1,2,3'
+            ],
+            [
+                'exam.required' => 'Master File must be selected.',
+                'exam.exists' => 'Selected Master File does not exist on the server.',
+                'start.date' => 'Start Date format is not correct.',
+                'end.date' => 'End Date format is not correct.',
+                'frequency.required' => 'Select a Frequency value from the dropdown.',
+                'frequency.in' => 'Frequency value must be 0, 1, 2 or 3.',
+            ]);
 
-        $Q = \App\UploadRow 
-        ::join('uploads', 'uploadrows.upload_id', '=', 'uploads.id')
-        ->join('accesses', 'uploads.access_id', '=', 'accesses.id')
-        ->join('qas', function($join) { 
-            $join->on('uploadrows.a1', '=', 'qas.index')->
-                 orOn('uploadrows.a2', '=', 'qas.index')->
-                 orOn('uploadrows.a3', '=', 'qas.index');
-        });
- 
+        $Q = \App\UploadRow
+            ::join('uploads', 'uploadrows.upload_id', '=', 'uploads.id')
+            ->join('accesses', 'uploads.access_id', '=', 'accesses.id')
+            ->join('qas', function($join) {
+                $join->on('uploadrows.a1', '=', 'qas.index')->
+                    orOn('uploadrows.a2', '=', 'qas.index')->
+                    orOn('uploadrows.a3', '=', 'qas.index');
+            });
+
         $Q = $Q->where('accesses.exam_id', $request['exam'])
-                ->whereRaw('qas.exam_id = accesses.exam_id'); //this condition should actually go into the join call above, but i can't find a way to group together the conditions that are already there
+            ->whereRaw('qas.exam_id = accesses.exam_id'); //this condition should actually go into the join call above, but i can't find a way to group together the conditions that are already there
 
         if($request->filled('start')) {
             $Q = $Q->where('uploads.created_at', '>=', $request['start']);
         }
-        
+
         if($request->filled('end')) {
             //End date is inclusive, so we'll acccept anything that is less than next day.
             $end = new \Carbon\Carbon($request->end);
@@ -383,7 +389,7 @@ class ExamController extends Controller
         }
 
         $Q = $Q->orderBy('freq', 'DESC')
-                ->selectRaw('qas.index as `index`, qas.question, qas.answer, COUNT(*) as freq');
+            ->selectRaw('qas.index as `index`, qas.question, qas.answer, COUNT(*) as freq');
 
         return $Q;
     }

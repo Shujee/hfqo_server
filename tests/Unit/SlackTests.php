@@ -6,8 +6,6 @@ use App\Download;
 use App\Exam;
 use App\Http\Controllers\RequestIP;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Http\Controllers\SlackAgent;
 use App\Notifications\ExamDownloaded;
 use App\Notifications\ExamUploaded;
@@ -26,7 +24,7 @@ class SlackTests extends TestCase
         try {
             throw new Exception('Division by zero.');
         } catch (Exception $e) {
-            (new SlackAgent())->notify(new GenericException('123.123.123.123', \App\User::find(1), $e));    
+            (new SlackAgent())->notify(new GenericException('123.123.123.123', null, $e));
         }
         
         $this->assertTrue(true);

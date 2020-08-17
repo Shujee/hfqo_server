@@ -51,7 +51,7 @@ class GenericException extends Notification
         ->to('#error')
         ->content(json_encode([
             'IP' => $this->IP,
-            'User' => $this->User->name,
+            'User' => ($this->User == null ? null : $this->User->name),
             'Error' => $this->Error,
             ], JSON_PRETTY_PRINT));
     }

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\RequestIP;
 use App\Notifications\ExamDownloaded;
+use App\Notifications\GenericException;
 use Exception;
 
 class AccessController extends Controller
@@ -97,7 +98,7 @@ class AccessController extends Controller
                 if ($Access != null) {
                     $Access->delete();
                 }
-            }  
+            }
             else if ($Acc['added']) {
                 $Access = new Access();
 
@@ -120,7 +121,7 @@ class AccessController extends Controller
         }
     }
 
-        /**
+    /**
      * Returns XPS and XML files of the specified exam if current user has been granted access to this exam.
      *
      * @param  \App\Exam  $exam
@@ -148,7 +149,7 @@ class AccessController extends Controller
             return response()->json([
                 'error' => 'The specified master file has been deleted.'
             ], 422);
-        }
+        } 
         else if($exam->is_expired){
             return response()->json([
                 'error' => 'The specified master file has expired.'
@@ -161,49 +162,59 @@ class AccessController extends Controller
             if($MyAccess == null){
                 return response()->json([
                     'error' => 'You do not have access to the specified master file.'
-                ], 422);    
+                ], 422);
             }
             else {
-                //record download activity
-                $DL = new \App\Download;
-                $DL->access_id = $MyAccess->id;
-                $DL->ip = $IP;
 
-                $Loc = $this->ip_2_city_country($IP);
-                $DL->city = $Loc['city'];
-                $DL->country = $Loc['country'];
+                try {
 
-                $DL->machine_name = $request['machine_name'];
-                $DL->save();
+                    //record download activity
+                    $DL = new \App\Download;
+                    $DL->access_id = $MyAccess->id;
+                    $DL->ip = $IP;
 
-                if(Storage::disk('local')->exists($exam->xps_file_name) && Storage::disk('local')->exists($exam->xml_file_name))
-                {
-                    $xps = Storage::disk('local')->get($exam->xps_file_name);
-                    $xml = Storage::disk('local')->get($exam->xml_file_name);
+                    $Loc = $this->ip_2_city_country($IP);
+                    $DL->city = $Loc['city'];
+                    $DL->country = $Loc['country'];
 
-                    $xps64 = base64_encode($xps);
-                    $xml64 = base64_encode($xml);
+                    $DL->machine_name = $request['machine_name'];
+                    $DL->save();
 
-                    try {
-                        (new SlackAgent())->notify(new ExamDownloaded($DL));
+                    if(Storage::disk('local')->exists($exam->xps_file_name) && Storage::disk('local')->exists($exam->xml_file_name))
+                    {
+                        $xps = Storage::disk('local')->get($exam->xps_file_name);
+                        $xml = Storage::disk('local')->get($exam->xml_file_name);
+
+                        $xps64 = base64_encode($xps);
+                        $xml64 = base64_encode($xml);
+
+                        try {
+                            (new SlackAgent())->notify(new ExamDownloaded($DL));
+                        } 
+                        catch(Exception $e) {
+                            Log::alert("Slack notification failed [EXAM DOWNLOADED]. {$e->getMessage()}. User: {$request->user()->name}, Exam: {$exam->name}");
+                        }
+
+                        return response()->json([
+                            'id' => $exam->id,
+                            'xps'=> $xps64,
+                            'xml'=> $xml64,
+                            'download_id' => $DL->id,
+                            'number' => $exam->number,
+                            'name' => $exam->name,
+                        ]);
+                    } 
+                    else {
+                        return response()->json([
+                            'error' => 'Specified master file does not exist on the server. Please contact server administrator.'
+                        ], 422);
                     }
-                    catch(Exception $e) {
-                        Log::alert("Slack notification failed [EXAM DOWNLOADED]. {$e->getMessage()}. User: {$request->user()->name}, Exam: {$exam->name}");
-                    }               
-    
+                } catch (Exception $e) {
+                    (new SlackAgent())->notify(new GenericException($IP, $request->user(), $e));
+
                     return response()->json([
-                        'id' => $exam->id,
-                        'xps'=> $xps64,
-                        'xml'=> $xml64,
-                        'download_id' => $DL->id,
-                        'number' => $exam->number,
-                        'name' => $exam->name,
-                    ]);    
-                }
-                else {
-                    return response()->json([
-                        'error' => 'Specified master file does not exist on the server. Please contact server administrator.'
-                    ], 422);        
+                        'error' => 'A server-side error occurred while trying to download exam files.'
+                    ], 500);
                 }
             }
         }

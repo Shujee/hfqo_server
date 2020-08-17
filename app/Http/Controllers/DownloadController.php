@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Download;
 use Illuminate\Http\Request;
 use App\Http\Resources\Download as DownloadResource;
+use App\Notifications\GenericException;
+use Exception;
 use Intervention\Image\Facades\Image;
 
 class DownloadController extends Controller
@@ -88,28 +90,38 @@ class DownloadController extends Controller
 
     public function snapshot(Request $request, Download $download)
     {
-        $sn = new \App\Snapshot();
+        try 
+        {
+            $sn = new \App\Snapshot();
 
-        $sn->download_id = $download->id;
-        $sn->filename = $request->file('image_file')->store('snapshots');
-        $sn->timestamp = $request->timestamp;
+            $sn->download_id = $download->id;
+            $sn->filename = $request->file('image_file')->store('snapshots');
+            $sn->timestamp = $request->timestamp;
 
-        //create a thumb and save
-        $filename = pathinfo($sn->filename, PATHINFO_FILENAME);
-        $extension = pathinfo($sn->filename, PATHINFO_EXTENSION);
+            //create a thumb and save
+            $filename = pathinfo($sn->filename, PATHINFO_FILENAME);
+            $extension = pathinfo($sn->filename, PATHINFO_EXTENSION);
 
-        $img = Image::make(request()->file('image_file')->getRealPath());
-        $img->resize(null, 100, function ($constraint) {
-            $constraint->aspectRatio();
-        });        
+            $img = Image::make(request()->file('image_file')->getRealPath());
+            $img->resize(null, 100, function ($constraint) {
+                $constraint->aspectRatio();
+            });
 
-        $thumb = storage_path('app/snapshots') . '/' . $filename . "_thumb." . $extension;
+            $thumb = storage_path('app/snapshots') . '/' . $filename . "_thumb." . $extension;
 
-        $img->save($thumb);
+            $img->save($thumb);
 
-        $sn->thumb_filename = 'snapshots' . '/' . $filename . "_thumb." . $extension;
+            $sn->thumb_filename = 'snapshots' . '/' . $filename . "_thumb." . $extension;
 
-        $sn->save();
+            $sn->save();
+
+            return response()->json('success', 200);
+            
+        } catch (Exception $e) {
+            (new SlackAgent())->notify(new GenericException(null, $request->user(), $e));
+
+            return response()->json(['error' => $e], 500);
+        }
     }
 
     public function snapshots(Request $request, Download $download)

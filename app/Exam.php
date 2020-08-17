@@ -84,7 +84,7 @@ class Exam extends Model
      * @param [type] $user_id
      * @return void
     */
-    public function GetFirstValidAccess($user_id) {
+    public function GetFirstValidAccess($user_id) : ?\App\Access {
         return $this->Accesses()->
             where('user_id', $user_id)->
             where('exam_id', $this->id)->
@@ -98,7 +98,7 @@ class Exam extends Model
      * @param [type] $user_id
      * @return void
      */
-    public function ValidAccessExists($user_id) {
+    public function ValidAccessExists($user_id) : bool {
         return $this->Accesses()->
             where('user_id', $user_id)->
             where('exam_id', $this->id)->
@@ -112,7 +112,7 @@ class Exam extends Model
      * @param [type] $user_id
      * @return void
      */
-    public function AccessExists($user_id) {
+    public function AccessExists($user_id) : bool {
         return $this->Accesses()->
             where('user_id', $user_id)->
             where('exam_id', $this->id)->exists();

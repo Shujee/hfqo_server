@@ -28,21 +28,21 @@
       :sort-by="['updated_at']"
       :sort-desc="[true]"
     >
-      <template v-slot:item.number="{ item }">
+      <template v-slot:[`item.number`]="{ item }">
         <div class="ellipsis">
         <v-avatar size="32">
-          <v-icon>mdi-file-document</v-icon>
+          <v-icon :color="item.files_exist? 'success': 'error'">mdi-file-document</v-icon>
         </v-avatar>
         <span class="pl-4 ellipsis">{{ item.number }}</span>
         </div>
       </template>
    
-      <template v-slot:item.is_expired="{ item }">
+      <template v-slot:[`item.is_expired`]="{ item }">
         <v-icon v-if="item.is_expired" color="red">mdi-checkbox-marked</v-icon>
         <v-icon v-else>mdi-checkbox-blank-outline</v-icon>
       </template>
 
-      <template v-slot:item.updated_at="{ item }">
+      <template v-slot:[`item.updated_at`]="{ item }">
         <v-layout justify-center>
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
@@ -56,7 +56,7 @@
         </v-layout>
       </template>
 
-      <template v-slot:item.actions="{ item }">
+      <template v-slot:[`item.actions`]="{ item }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-icon @click="showPermissionsModal(item)" class="mr-2" v-on="on">mdi-timetable</v-icon>
