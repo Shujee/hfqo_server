@@ -43,7 +43,7 @@ class ExamController extends Controller
     public function number_exists($number)
     {
         $Exists = \App\Exam::where('number', $number)->exists();
-        return $Exists? "true" : "false";
+        return response()->json($Exists);
     }
 
     /**
