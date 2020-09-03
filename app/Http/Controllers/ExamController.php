@@ -179,7 +179,8 @@ class ExamController extends Controller
 
                 (new SlackAgent())->notify(new ExamUploaded($exam, false));
 
-                return "true";
+                return response()->json(['result' => 'success']);
+                
             } catch (Exception $e) {
                 (new SlackAgent())->notify(new GenericException(null, $request->user(), $e));
 
