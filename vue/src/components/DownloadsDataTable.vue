@@ -2,9 +2,36 @@
   <v-card class="ma-0 pa-0">
     <v-card-title class="ma-0 py-1">
       <v-icon class="mr-2">mdi-download</v-icon>Downloads
-      <v-btn icon color="primary" @click="fetchDownloads">
-        <v-icon>mdi-cached</v-icon>
-      </v-btn>
+
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            icon
+            color="primary"
+            @click="fetchDownloads"
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon>mdi-cached</v-icon>
+          </v-btn>
+        </template>
+        <span>Refresh downloads</span>
+      </v-tooltip>
+
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            icon
+            color="primary"
+            @click="show_delete_snapshots_modal = true"
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon>mdi-camera-off</v-icon>
+          </v-btn>
+        </template>
+        <span>Delete past snapshots in date range</span>
+      </v-tooltip>
       <v-spacer></v-spacer>
       <v-text-field
         v-model="search"
@@ -14,6 +41,66 @@
         hide-details
       ></v-text-field>
     </v-card-title>
+
+    <v-dialog v-model="show_delete_snapshots_modal" max-width="500px">
+      <v-card>
+        <v-card-title>Delete Snapshots</v-card-title>
+        <v-card-text>
+          <v-menu
+            v-model="delete_snapshots_start_menu"
+            :close-on-content-click="false"
+            :nudge-right="40"
+            transition="scale-transition"
+            offset-y
+            min-width="290px"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-text-field
+                v-model="delete_snapshots_start"
+                label="Start Date"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-bind="attrs"
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="delete_snapshots_start"
+              @input="delete_snapshots_start_menu = false"
+            ></v-date-picker>
+          </v-menu>
+
+          <v-menu
+            v-model="delete_snapshots_end_menu"
+            :close-on-content-click="false"
+            :nudge-right="40"
+            transition="scale-transition"
+            offset-y
+            min-width="290px"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-text-field
+                v-model="delete_snapshots_end"
+                label="End Date"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-bind="attrs"
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="delete_snapshots_end"
+              @input="delete_snapshots_end_menu = false"
+            ></v-date-picker>
+          </v-menu>
+        </v-card-text>
+        <v-card-actions class="right">
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="deleteSnapshots"> Delete </v-btn>
+          <v-btn color="primary" text @click="show_delete_snapshots_modal = false"> Close </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
     <v-data-table
       style="height: calc(100vh - 120px); overflow: auto;"
@@ -102,6 +189,11 @@ export default {
     return {
       loading: false,
       media_loading: true,
+      show_delete_snapshots_modal: false,
+      delete_snapshots_start: null,
+      delete_snapshots_end: null,
+      delete_snapshots_start_menu: false,
+      delete_snapshots_end_menu: false,
       media: [],
       search: "",
       expanded: [],
@@ -139,11 +231,19 @@ export default {
     },
 
     fetchDownloads() {
-       this.$store
-      .dispatch("fetchDownloads")
-      .then(() => (this.loading = false))
-      .catch(() => (this.loading = false));
-    }
+      this.$store
+        .dispatch("fetchDownloads")
+        .then(() => (this.loading = false))
+        .catch(() => (this.loading = false));
+    },
+
+    deleteSnapshots() {
+      this.$store
+        .dispatch("deleteSnapshots", {
+          s: this.delete_snapshots_start,
+          e: this.delete_snapshots_end,
+        });
+    },
   },
 
   mounted() {

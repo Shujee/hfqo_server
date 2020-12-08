@@ -77,7 +77,9 @@ Route::prefix('v1')->group(function()
         //Camera snapshot upload
         Route::post('/download/{download}/snapshot', 'DownloadController@snapshot')->middleware('can:uploadSnapshot,download');
 
-        //Camera snapshot upload
+        //Camera snapshots bulk delete
+        Route::delete('/download/snapshots', 'DownloadController@delete_snapshots')->middleware('can:viewAny,App\Download');
+
         Route::get('/download/{download}/snapshots', 'DownloadController@snapshots')->middleware('can:viewSnapshots,download');
     });
 });

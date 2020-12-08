@@ -324,6 +324,22 @@ export default new Vuex.Store({
                     throw err;
                 });
         },
+
+        deleteSnapshots(context, {s, e}) {
+            return axios
+                .delete("/download/snapshots", {
+                    data: {
+                    start_date: s,
+                    end_date: e,
+                    }
+                })
+                .then(response => {
+                    alert(response.data.delete_count + " snapshots deleted from the server.");
+                })
+                .catch((err) => {
+                    throw err;
+                });
+        },
         
         fetchUploads(context) {
             return axios

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Resources\Download as DownloadResource;
 use App\Notifications\GenericException;
 use Exception;
+use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 
 class DownloadController extends Controller
@@ -122,6 +123,29 @@ class DownloadController extends Controller
 
             return response()->json(['error' => $e], 500);
         }
+    }
+
+    public function delete_snapshots(Request $request)
+    {
+        $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
+        ]);
+
+        $Q = \App\Snapshot::whereBetween('timestamp', [$request['start_date'], $request['end_date']]);
+        $Snapshots = $Q->get();
+        $SnapshotCount = count($Snapshots);
+
+        foreach ($Snapshots as $sn) {
+            Storage::delete($sn->filename);
+            Storage::delete($sn->thumb_filename);
+        }
+
+        $Q->delete();
+
+        return response()->json([
+            'delete_count' => $SnapshotCount
+        ]);
     }
 
     public function snapshots(Request $request, Download $download)
