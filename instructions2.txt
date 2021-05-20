@@ -44,3 +44,11 @@ HANDY QUERIES
 -------------
 Uploads for a given exam, grouped by date
 \App\Upload::join('accesses', 'uploads.access_id', '=', 'accesses.id')->join('exams', 'accesses.exam_id', '=', 'exams.id')->where('exams.id', 5)->groupBy(['uploads.created_at'])->selectRaw('DATE(uploads.created_at) as Date')->get()->all();
+
+SELECT e.number, e.name, u.id as upload_id, u.machine_name, u.created_at, usr.name 
+FROM exams e 
+INNER JOIN accesses a ON a.exam_id = e.id 
+INNER JOIN uploads u ON u.access_id = a.id 
+INNER JOIN users usr ON usr.id = a.user_id 
+WHERE e.number = '350-401'
+ORDER BY u.created_at DESC
