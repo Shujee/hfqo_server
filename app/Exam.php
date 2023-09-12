@@ -69,7 +69,7 @@ class Exam extends Model
 
     public function Uploader()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo('App\User')->withTrashed();
     }
 
     public function QAs()

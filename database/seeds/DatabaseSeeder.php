@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
         }
         else {
             $u1->email = 'admin@hfqserver.com';
-            $u1->password = \Illuminate\Support\Facades\Hash::make('429ci90vtn3p');
+            $u1->password = \Illuminate\Support\Facades\Hash::make('MMvc44ydkAVo');
         }
 
         $u1->save();

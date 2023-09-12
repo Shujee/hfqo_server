@@ -27,19 +27,22 @@ class AuthController extends Controller
         ]);
 
         $http = new \GuzzleHttp\Client; 
+        $IP = "<Unknown>";
+        $U = null;
 
         try
         {
-//get token first
-            $response = $http->post(config('services.passport.login_endpoint'), [
-                'form_params' => [
-                    'grant_type' => 'password',
-                    'client_id' => (int)config('services.passport.client_id'),
-                    'client_secret' => config('services.passport.client_secret'),
-                    'username' => $request->email,
-                    'password' => $request->password,
-                ]
-            ]);
+            //get token first
+            $login_endpoint = config('services.passport.login_endpoint');
+            $login_params = [
+                'grant_type' => 'password',
+                'client_id' => (int)config('services.passport.client_id'),
+                'client_secret' => config('services.passport.client_secret'),
+                'username' => $request->email,
+                'password' => $request->password,
+            ];
+
+            $response = $http->post($login_endpoint, [ 'form_params' => $login_params ]);
 
             $res = $response->getBody()->getContents();
             $Token = json_decode($res, true);

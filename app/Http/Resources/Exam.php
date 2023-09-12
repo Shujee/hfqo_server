@@ -26,7 +26,7 @@ class Exam extends JsonResource
             'updated_at' => $this->updated_at,
             'age' => $this->updated_at->diffForHumans(),
             'remarks' => $this->remarks,
-            'uploader' => $this->Uploader->name,
+            'uploader' => ($this->Uploader? $this->Uploader->name : "<Not Found>"),
             'files_exist' => Storage::disk('local')->exists( $this->xml_file_name) && Storage::disk('local')->exists( $this->xps_file_name)
         ];
     }
